@@ -43,7 +43,7 @@ export default function homepage() {
   //     ...blog,
   //     link: `/blogs/${createSlug(blog.title)}`,
   //   }));
-  const { blogLinks } = blogapis();
+  // const { blogLinks } = blogapis();
 //   console.log("blogLinks :", blogLinks);
   return (
     <div>
@@ -52,7 +52,8 @@ export default function homepage() {
       <About />
       <Services />
       <Projects />
-      <Blog cardsData={blogLinks} />
+      <Blog />
+      {/* <Blog cardsData={blogLinks} /> */}
       <Contact />
       <Footer />
       <ScrollToTop />
