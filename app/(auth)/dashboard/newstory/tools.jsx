@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Code from "@editorjs/code";
@@ -31,46 +31,48 @@ export const EDITOR_JS_TOOLS = {
     config: {
       uploader: {
         async uploadByFile(file) {
-          try {
-            // Upload the file to the backend
-            const token = document.cookie
-              .match(/BLOG_ACTIVE/)
-              .input.replace("BLOG_ACTIVE=", "");
+          if (typeof window !== "undefined") {
+            try {
+              // Upload the file to the backend
+              const token = document.cookie
+                .match(/BLOG_ACTIVE/)
+                .input.replace("BLOG_ACTIVE=", "");
 
-            const headers = {
-              Authorization: `Bearer ${token}`,
-            };
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_HOST}/uploadFile`,
-              {
-                method: "POST",
-                body: formData,
-                headers: headers,
-              }
-            );
-
-            const result = await response.json();
-
-            if (result.success) {
-              console.log("Image uploaded:", result.file.url);
-              return {
-                success: 1,
-                file: {
-                  url: result.file.url, // Return file URL here
-                },
+              const headers = {
+                Authorization: `Bearer ${token}`,
               };
-            } else {
-              throw new Error("Image upload failed");
+              const formData = new FormData();
+              formData.append("file", file);
+
+              const response = await fetch(
+                `${process.env.NEXT_PUBLIC_HOST}/uploadFile`,
+                {
+                  method: "POST",
+                  body: formData,
+                  headers: headers,
+                }
+              );
+
+              const result = await response.json();
+
+              if (result.success) {
+                console.log("Image uploaded:", result.file.url);
+                return {
+                  success: 1,
+                  file: {
+                    url: result.file.url, // Return file URL here
+                  },
+                };
+              } else {
+                throw new Error("Image upload failed");
+              }
+            } catch (error) {
+              console.error("Image upload error:", error);
+              return {
+                success: 0,
+                message: error.message || "Something went wrong",
+              };
             }
-          } catch (error) {
-            console.error("Image upload error:", error);
-            return {
-              success: 0,
-              message: error.message || "Something went wrong",
-            };
           }
         },
       },

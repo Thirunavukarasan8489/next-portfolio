@@ -1,11 +1,15 @@
 "use client";
 import React, { memo, useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
-import { EDITOR_JS_TOOLS } from "./tools";
+// import { EDITOR_JS_TOOLS } from "./tools";
 import "./editor.css";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import encryptdecrypt from "@/utils/encryptdecrypt";
 import { useRouter, useSearchParams } from "next/navigation";
+const EDITOR_JS_TOOLS = dynamic(() => import("./tools"), {
+  ssr: false, // Disable SSR for this component
+});
 const INITIAL_DATA = {
   time: new Date().getTime(),
   blocks: [],
