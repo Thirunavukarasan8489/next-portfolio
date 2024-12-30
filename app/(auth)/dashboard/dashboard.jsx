@@ -45,7 +45,7 @@ export default function Dashboard() {
   const [publishStatus, setPublishStatus] = useState({});
   const navigate = useRouter();
   const logOut = () => {
-    localStorage.clear();
+    window.localStorage.clear();
     document.cookie = "BLOG_ACTIVE" + "=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
     navigate.push("/login");
   };
@@ -60,7 +60,7 @@ export default function Dashboard() {
   //   }
   // }, []);
   const tok = JSON.parse(
-    encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG"))
+    encryptdecrypt.decryptData(window.localStorage.getItem("BLOG_LOG"))
   );
 
   const getUserBlog = () => {
@@ -81,7 +81,7 @@ export default function Dashboard() {
         })
         .catch((err) => {
           if (err.response.data.message === "JWT token expired") {
-            localStorage.clear();
+            window.localStorage.clear();
             document.cookie =
               "BLOG_ACTIVE" + "=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
             navigate.push("/login");
