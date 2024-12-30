@@ -40,14 +40,16 @@ function classNames(...classes) {
 }
 
 export default function Dashboard() {
-  const [getData, setGetData] = useState();
+  const [getData, setGetData] = useState([]);
   const [search, setSearch] = useState("");
   const [publishStatus, setPublishStatus] = useState({});
   const navigate = useRouter();
   const logOut = () => {
-    window.localStorage.clear();
-    document.cookie = "BLOG_ACTIVE" + "=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
-    navigate.push("/login");
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+      document.cookie = "BLOG_ACTIVE=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
+      navigate.push("/login");
+    }
   };
   // const [tok, setTok] = useState(null);
   // useEffect(() => {
@@ -59,43 +61,43 @@ export default function Dashboard() {
   //     }
   //   }
   // }, []);
-  const tok = JSON.parse(
-    encryptdecrypt.decryptData(window.localStorage.getItem("BLOG_LOG"))
-  );
+  const tok =
+    typeof window !== "undefined"
+      ? JSON.parse(encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG")))
+      : {};
 
   const getUserBlog = () => {
-    try {
-      const token = document.cookie
-        .match(/BLOG_ACTIVE/)
-        .input.replace("BLOG_ACTIVE=", "");
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      let hashId = encryptdecrypt.encryptData(tok?.id);
-      const URL = `${process.env.NEXT_PUBLIC_HOST}/getusercontent/${hashId}`;
-      axios
-        .get(URL, { headers })
-        .then((res) => {
-          let deContent = JSON.parse(encryptdecrypt.decryptData(res.data));
-          setGetData(deContent);
-        })
-        .catch((err) => {
-          if (err.response.data.message === "JWT token expired") {
-            window.localStorage.clear();
-            document.cookie =
-              "BLOG_ACTIVE" + "=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
-            navigate.push("/login");
-          } else {
-            console.log(err);
-          }
-        });
-    } catch (error) {
-      console.error(error);
+    if (typeof window !== "undefined") {
+      try {
+        const token = document.cookie
+          .match(/BLOG_ACTIVE/)
+          .input.replace("BLOG_ACTIVE=", "");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        let hashId = encryptdecrypt.encryptData(tok?.id);
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/getusercontent/${hashId}`;
+        axios
+          .get(URL, { headers })
+          .then((res) => {
+            let deContent = JSON.parse(encryptdecrypt.decryptData(res.data));
+            setGetData(deContent);
+          })
+          .catch((err) => {
+            if (err.response.data.message === "JWT token expired") {
+              localStorage.clear();
+              document.cookie =
+                "BLOG_ACTIVE" + "=; expires=Thu, 01-Jan-24 00:00:01 GMT;";
+              navigate.push("/login");
+            } else {
+              console.log(err);
+            }
+          });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
-  useEffect(() => {
-    getUserBlog();
-  }, []);
 
   const linkSlug = getData?.map((blog) => ({
     ...blog,
@@ -123,92 +125,87 @@ export default function Dashboard() {
     navigate.push(`/dashboard/newstory?edit=${hashId}`);
   };
 
-  const getPublishedUnpublished = () => {
-    const token = document.cookie
-      .match(/BLOG_ACTIVE/)
-      .input.replace("BLOG_ACTIVE=", "");
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    const tokId = encryptdecrypt.encryptData(tok.id);
-    const URL = `${process.env.NEXT_PUBLIC_HOST}/getpublish/${tokId}`;
-    axios
-      .get(URL, { headers })
-      .then((res) => {
-        const statusMap = {};
-        res.data.forEach((item) => {
-          const { id, ispublished } = item;
-          statusMap[id] = ispublished; // Directly map "Published" or "Unpublished"
-        });
-        setPublishStatus(statusMap);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  useEffect(() => {
-    getPublishedUnpublished();
-  }, []);
-
-  const handlePublishToggle = (id) => {
-    console.log("Id pub : ", id);
-    const currentStatus = publishStatus[id] || "Unpublished";
-    console.log(currentStatus);
-    const newStatus =
-      currentStatus === "Published" ? "Unpublished" : "Published";
-    console.log("newStatus : ", newStatus);
-    setPublishStatus((prev) => ({ ...prev, [id]: newStatus }));
-    console.log(`Post ID: ${id}, New Status: ${newStatus}`);
-    const token = document.cookie
-      .match(/BLOG_ACTIVE/)
-      .input.replace("BLOG_ACTIVE=", "");
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    let hashIdd = encryptdecrypt.encryptData(id);
-    const URL = `${process.env.NEXT_PUBLIC_HOST}/setpublish/${hashIdd}`;
-    let myjson = { ispublished: newStatus };
-    const hashData = encryptdecrypt.encryptData(JSON.stringify(myjson));
-    axios
-      .put(URL, { enData: hashData }, { headers })
-      .then(() => {
-        // console.log(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const handleDelete = async (v) => {
+  // Fetch published/unpublished statuses
+  const getPublishedUnpublished = async () => {
+    if (typeof window === "undefined") return;
     try {
       const token = document.cookie
         .match(/BLOG_ACTIVE/)
-        .input.replace("BLOG_ACTIVE=", "");
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      let hashId = encryptdecrypt.encryptData(v);
-      const URL = `${process.env.NEXT_PUBLIC_HOST}/delete/${hashId}`;
-      axios
-        .delete(URL, { headers })
-        .then((res) => {
-          console.log(res);
-          setTimeout(() => {
-            getUserBlog();
-          }, 100);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
+        ?.input?.replace("BLOG_ACTIVE=", "");
+      if (!token) return;
+
+      const headers = { Authorization: `Bearer ${token}` };
+      const tok = JSON.parse(
+        encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG"))
+      );
+      const tokId = encryptdecrypt.encryptData(tok?.id);
+      const URL = `${process.env.NEXT_PUBLIC_HOST}/getpublish/${tokId}`;
+
+      const response = await axios.get(URL, { headers });
+      const statusMap = {};
+      response.data.forEach((item) => {
+        const { id, ispublished } = item;
+        statusMap[id] = ispublished;
+      });
+      setPublishStatus(statusMap);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const capitalizeFirstLetter = (val) => {
-    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+  useEffect(() => {
+    getUserBlog();
+    getPublishedUnpublished();
+  }, []);
+
+  // Toggle publish status
+  const handlePublishToggle = async (id) => {
+    const currentStatus = publishStatus[id] || "Unpublished";
+    const newStatus =
+      currentStatus === "Published" ? "Unpublished" : "Published";
+
+    setPublishStatus((prev) => ({ ...prev, [id]: newStatus }));
+
+    try {
+      const token = document.cookie
+        .match(/BLOG_ACTIVE/)
+        ?.input?.replace("BLOG_ACTIVE=", "");
+      if (!token) return;
+
+      const headers = { Authorization: `Bearer ${token}` };
+      const hashId = encryptdecrypt.encryptData(id);
+      const URL = `${process.env.NEXT_PUBLIC_HOST}/setpublish/${hashId}`;
+      const myjson = { ispublished: newStatus };
+      const hashData = encryptdecrypt.encryptData(JSON.stringify(myjson));
+
+      await axios.put(URL, { enData: hashData }, { headers });
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  // Handle delete
+  const handleDelete = async (id) => {
+    try {
+      const token = document.cookie
+        .match(/BLOG_ACTIVE/)
+        ?.input?.replace("BLOG_ACTIVE=", "");
+      if (!token) return;
+
+      const headers = { Authorization: `Bearer ${token}` };
+      const hashId = encryptdecrypt.encryptData(id);
+      const URL = `${process.env.NEXT_PUBLIC_HOST}/delete/${hashId}`;
+
+      await axios.delete(URL, { headers });
+      getUserBlog();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Capitalize helper
+  const capitalizeFirstLetter = (val) =>
+    val ? String(val).charAt(0).toUpperCase() + String(val).slice(1) : "";
 
   return (
     <>
@@ -492,105 +489,6 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-
-        {/* <main className="-mt-32">
-          <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-            <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-2">
-              <div className="container mx-auto px-4 py-8">
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredCards?.length ? (
-                    filteredCards.map((v, i) => (
-                      <div
-                        key={i}
-                        className="bg-white group shadow-lg rounded-lg overflow-hidden transition hover:-translate-y-3 hover:shadow-2xl border-[1px] border-bordercolor duration-300 ease-in-out"
-                      >
-                        <img
-                          src={v.bannerimg}
-                          alt={v.metatitle}
-                          className="w-full h-48 object-cover"
-                        />
-                        <div className="p-4 border-t-2 border-primary">
-                          <div className="">
-                            <div className="flex items-center justify-between text-textblack mb-4">
-                              <div className="flex items-center space-x-2 roboto-regular">
-                                <FaRegUser />
-                                <span>{capitalizeFirstLetter(v.author)}</span>
-                              </div>
-                              <div className="flex items-center space-x-2 roboto-regular">
-                                <IoPricetagOutline />
-                                <span>{capitalizeFirstLetter(v.category)}</span>
-                              </div>
-                            </div>
-                            <hr className="text-bordercolor pb-5" />
-                            <h3 className="text-h6 text-text font-medium mb-5 hover:underline underline-offset-2 group-hover:text-primary">
-                              <Link href={v.link}>{v.metatitle}</Link>
-                            </h3>
-                            <hr className="text-bordercolor pb-5" />
-                            <div className="flex justify-between items-end text-sm text-textblack pb-3">
-                              <div className="flex items-center space-x-2">
-                                <Link
-                                  href={v.link}
-                                  className="text-base hover:underline roboto-regular"
-                                >
-                                  Read More{" "}
-                                </Link>
-                                <span>
-                                  <FaChevronRight />
-                                </span>
-                              </div>
-                              <div className="flex items-center text-base space-x-2 roboto-regular">
-                                <MdOutlineDateRange className="text-textblack" />
-                                <span>{formatDateDDMMYYYY(v.updatedDate)}</span>
-                              </div>
-                            </div>
-                            <div className="2xl:flex xl:flex lg:flex mdsm:block sm:block 2xl:justify-between xl:justify-between lg:justify-between mdsm:text-center sm:text-center mdsm:space-y-4 sm:space-y-4 items-end">
-                              <div>
-                                <button
-                                  className="bg-primary text-white w-full py-1 px-5 rounded-md hover:bg-[#B53535]"
-                                  onClick={() => {
-                                    handleEdit(v);
-                                  }}
-                                >
-                                  Edit
-                                </button>
-                              </div>
-                              <div>
-                                <button
-                                  className="bg-primary text-white w-full py-1 px-5 rounded-md hover:bg-[#B53535]"
-                                  onClick={() => {
-                                    handlePublishToggle(v._id);
-                                  }}
-                                >
-                                  {publishStatus[v._id] === "Published"
-                                    ? "Unpublish"
-                                    : "Publish"}
-                                </button>
-                              </div>
-                              <div>
-                                <button
-                                  className="bg-primary text-white w-full py-1 px-5 rounded-md hover:bg-[#B53535]"
-                                  onClick={() => {
-                                    handleDelete(v._id);
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-full text-center text-gray">
-                      No Data...
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </main> */}
       </div>
     </>
   );

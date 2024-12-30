@@ -20,9 +20,11 @@ const Editor = ({ editorBlock }) => {
   const urlsearch = useSearchParams();
   const getEditId = urlsearch.get("edit");
   const [showEditor, setShowEditor] = useState(false);
-  const getBlogDetails = JSON.parse(
-    encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG"))
-  );
+  const getBlogDetails =
+    typeof window !== "undefined"
+      ? JSON.parse(encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG")))
+      : {};
+
   const [values, setValues] = useState({
     uid: getBlogDetails.id,
     metatitle: "",
@@ -36,7 +38,7 @@ const Editor = ({ editorBlock }) => {
   const ref = useRef();
 
   const editById = () => {
-    if (getEditId) {
+    if (typeof window !== "undefined" && getEditId) {
       setShowEditor(true);
       try {
         const token = document.cookie
@@ -136,7 +138,7 @@ const Editor = ({ editorBlock }) => {
   // }, [data, editorInstance]);
 
   useEffect(() => {
-    if (!ref.current) {
+    if (typeof window !== "undefined" && !ref.current) {
       const editor = new EditorJS({
         holder: "editorjs-container",
         data: data,
@@ -164,6 +166,7 @@ const Editor = ({ editorBlock }) => {
   }, []);
 
   const resizeAndCompressImage = (img, targetSizeKB) => {
+    if (typeof window === "undefined") return;
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -210,7 +213,7 @@ const Editor = ({ editorBlock }) => {
 
   const handleBannerImageUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || typeof window === "undefined") return;
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();

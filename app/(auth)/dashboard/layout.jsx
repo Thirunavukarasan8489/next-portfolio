@@ -1,5 +1,3 @@
-import React from "react";
-import Authpage from "./page";
 export const metadata = {
   title: "Admin Dashboard",
   description: "Dashboard for blog writes",
