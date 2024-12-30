@@ -1,7 +1,9 @@
 "use client";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import encryptdecrypt from "@/utils/encryptdecrypt";
+import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 export default function Register() {
   const [values, setValues] = useState({
     name: "",
@@ -9,33 +11,119 @@ export default function Register() {
     phone: "",
     password: "",
   });
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSaveClick, setIsSaveClick] = useState(false);
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        // console.log("Enter key was pressed. Run your function.");
+        event.preventDefault();
+        handleSubmit();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [values]);
+  const Validation = (values) => {
+    let error = {};
+    let regex = /^[A-Za-z\s]+$/; // Regex for name validation
+    let numberRegex = /^[6-9]\d{9}$/; // Regex for phone validation
+    let emailRegex = /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/; // Regex for email validation
+    let pass = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/; // Regex for password validation
+    if (!values.name) {
+      error.name = "Enter Your Name";
+    } else if (!regex.test(values.name)) {
+      error.name = "Name must contain alphabets only";
+    }
+
+    if (!values.email) {
+      error.email = "Enter Your Email";
+    } else if (!emailRegex.test(values.email)) {
+      error.email = "Enter a valid email address";
+    }
+
+    if (!values.phone) {
+      error.phone = "Enter Your Phone Number";
+    } else if (!numberRegex.test(values.phone)) {
+      error.phone = "Enter a valid phone number";
+    }
+
+    if (!values.password) {
+      error.password = "Enter Your New Password";
+    } else if (!pass.test(values.password)) {
+      error.password =
+        "Minimum eight characters, at least one letter, one number and one special character";
+    }
+
+    return error;
+  };
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setValues((prevValues) => ({ ...prevValues, [name]: value }));
+    if (isSaveClick) {
+      const validationErrors = Validation({ ...values, [name]: value });
+      setErrors(validationErrors);
+    }
+  };
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
   const handleSubmit = () => {
-    const myjson = {
-      name: values.name,
-      phone: values.phone,
-      email: values.email,
-      password: values.password,
-    };
-    try {
-      let data = encryptdecrypt.encryptData(JSON.stringify(myjson));
-      const URL = `${process.env.NEXT_PUBLIC_HOST}/create`;
-      axios
-        .post(URL, { data: data })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {}
+    setLoading(false);
+    setIsSaveClick(true);
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      const myjson = {
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+        password: values.password,
+      };
+      try {
+        let data = encryptdecrypt.encryptData(JSON.stringify(myjson));
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/create`;
+        axios
+          .post(URL, { data: data })
+          .then((res) => {
+            if (res.status === 200) {
+              alert(res.data);
+              setValues({
+                name: "",
+                email: "",
+                phone: "",
+                password: "",
+              });
+              setTimeout(() => {
+                setLoading(true);
+              }, 2000);
+              navigate.push("/login");
+            }
+          })
+          .catch((err) => {
+            setLoading(false);
+            if (err.response.status === 409) {
+              setLoading(true);
+              alert(err.response.data);
+            }
+            if (err.response.status === 500) {
+              setLoading(true);
+              alert(err.response.data);
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center dashbg py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-full flex-1 flex-col justify-center dashbg h-[100vh] py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           {/* <img
             alt="Your Company"
@@ -46,16 +134,12 @@ export default function Register() {
             Register Your Account Post Your Blogs
           </h2>
         </div>
-
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px] xl:mx-96 lg:mx-72 md:mx-36 mdsm:mx-12">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px] 2xl:mx-[600px] xl:mx-96 lg:mx-72 md:mx-36 mdsm:mx-12">
           <div className="bg-white px-12 py-12 sm:px-8 shadow-lg rounded-lg">
             <div className="space-y-6">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
-                  Name
+                <label className="text-sm/6 font-medium text-[#111827]">
+                  Name <span className="text-red">*</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -63,19 +147,19 @@ export default function Register() {
                     value={values.name}
                     onChange={(e) => handleOnChange(e)}
                     type="text"
-                    required
-                    autoComplete="email"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
+                    className={`w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6`}
                   />
                 </div>
+                {errors.name && (
+                  <span className="text-red text-base sm:text-[10px]">
+                    {errors.name}
+                  </span>
+                )}
               </div>
 
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
-                  Mobile
+                <label className="block text-sm/6 font-medium text-[#111827]">
+                  Mobile <span className="text-red">*</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -90,19 +174,19 @@ export default function Register() {
                     }}
                     maxLength={10}
                     minLength={10}
-                    required
-                    autoComplete="email"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                   />
                 </div>
+                {errors.phone && (
+                  <span className="text-red text-base sm:text-[10px]">
+                    {errors.phone}
+                  </span>
+                )}
               </div>
 
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
-                  Email address
+                <label className="block text-sm/6 font-medium text-[#111827]">
+                  Email address <span className="text-red">*</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -111,32 +195,46 @@ export default function Register() {
                     value={values.email}
                     onChange={(e) => handleOnChange(e)}
                     type="text"
-                    required
-                    autoComplete="email"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                   />
                 </div>
+                {errors.email && (
+                  <span className="text-red text-base sm:text-[10px]">
+                    {errors.email}
+                  </span>
+                )}
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
-                  Password
+                <label className="block text-sm/6 font-medium text-[#111827]">
+                  Password <span className="text-red">*</span>
                 </label>
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={values.password}
                     onChange={(e) => handleOnChange(e)}
-                    required
-                    autoComplete="current-password"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                   />
+                  <div
+                    className="absolute right-5 top-2.5 bottom-0 transition duration-700 ease-in-out"
+                    // type="button"
+                    onClick={handleTogglePassword}
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="text-text cursor-pointer" />
+                    ) : (
+                      <FaEye className="text-text cursor-pointer" />
+                    )}
+                  </div>
                 </div>
+                {errors.password && (
+                  <span className="text-red text-base sm:text-[10px]">
+                    {errors.password}
+                  </span>
+                )}
               </div>
 
               <div className="flex items-center justify-end">
@@ -154,14 +252,43 @@ export default function Register() {
                 <button
                   type="submit"
                   className="flex w-full justify-center transition rounded-md bg-primary px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-[#B53535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  onClick={handleSubmit}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
                 >
-                  Sign in
+                  {!loading ? (
+                    <div className="flex justify-center gap-x-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <p className="opacity-75">Signing in</p>
+                    </div>
+                  ) : (
+                    "Sign in"
+                  )}
                 </button>
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <div className="relative mt-10">
                 <div
                   aria-hidden="true"
@@ -225,7 +352,7 @@ export default function Register() {
                   <span className="text-sm/6 font-semibold">GitHub</span>
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <p className="mt-10 text-center text-sm/6 text-[#6b7280]">

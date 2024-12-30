@@ -298,7 +298,7 @@ const Editor = ({ editorBlock }) => {
               imgclearRef.current.value = null;
               setData(INITIAL_DATA); // Clear editor content
               ref.current.clear(); // Clear editor instance content
-              console.log("Data posted successfully");
+              // console.log("Data posted successfully");
               navigate.push("/dashboard");
             } else {
               console.log("Data not posted");

@@ -3,17 +3,20 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import encryptdecrypt from "@/utils/encryptdecrypt";
 export default function Login() {
   const [values, setValues] = useState({
     email: "",
     password: "",
   });
+
+  const [errors, setErrors] = useState({});
+  const [isSaveClick, setIsSaveClick] = useState(false);
   const navigate = useRouter();
-  const handleOnChange = (e) => {
-    const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
-  };
+  const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
@@ -27,31 +30,80 @@ export default function Login() {
       document.removeEventListener("keydown", listener);
     };
   }, [values]);
+  const Validation = (values) => {
+    let error = {};
+    let emailRegex = /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/; // Regex for email validation
+    let pass = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/; // Regex for password validation
+    if (!values.email) {
+      error.email = "Enter Your Email";
+      setLoading(true);
+    } else if (!emailRegex.test(values.email)) {
+      error.email = "Enter a valid email address";
+      setLoading(true);
+    }
+    // if (!values.password) {
+    //   error.password = "Enter Your New Password";
+    //   setLoading(true);
+    // } else if (!pass.test(values.password)) {
+    //   error.password =
+    //     "Minimum eight characters, at least one letter, one number and one special character";
+    //   setLoading(true);
+    // }
+    return error;
+  };
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prevValues) => ({ ...prevValues, [name]: value }));
+    if (isSaveClick) {
+      const validationErrors = Validation({ ...values, [name]: value });
+      setErrors(validationErrors);
+    }
+  };
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
   const handleSubmit = () => {
-    let mylogin = {
-      email: values.email,
-      password: values.password,
-    };
-    let data = encryptdecrypt.encryptData(JSON.stringify(mylogin));
-    const URL = `${process.env.NEXT_PUBLIC_HOST}/login`;
-    axios
-      .post(URL, { data: data })
-      .then((res) => {
-        if (res.status === 200) {
-          // console.log(res.data.enData);
-          // const now = new Date();
-          // now.setTime(now.getTime() + 5 * 1000);
-          // document.cookie = `BLOG_ACTIVE=${res.data.token};expires=${now.toUTCString()}; path=/`;
-          document.cookie = `BLOG_ACTIVE=${res.data.token}; path=/`;
-          localStorage.setItem("BLOG_LOG", res.data.enData);
-          navigate.push("/dashboard");
-        } else {
-          console.log("Error");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setLoading(false);
+    setIsSaveClick(true);
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      let mylogin = {
+        email: values.email,
+        password: values.password,
+      };
+      let data = encryptdecrypt.encryptData(JSON.stringify(mylogin));
+      const URL = `${process.env.NEXT_PUBLIC_HOST}/login`;
+      axios
+        .post(URL, { data: data })
+        .then((res) => {
+          if (res.status === 200) {
+            // console.log(res.data.enData);
+            // const now = new Date();
+            // now.setTime(now.getTime() + 5 * 1000);
+            // document.cookie = `BLOG_ACTIVE=${res.data.token};expires=${now.toUTCString()}; path=/`;
+            document.cookie = `BLOG_ACTIVE=${res.data.token}; path=/`;
+            localStorage.setItem("BLOG_LOG", res.data.enData);
+            navigate.push("/dashboard");
+            setTimeout(() => {
+              setLoading(true);
+            }, 2000);
+          } else {
+            console.log("Error");
+          }
+        })
+        .catch((err) => {
+          setLoading(false);
+          if (err.response.status === 409) {
+            setLoading(true);
+            alert(err.response.data);
+          }
+          if (err.response.status === 500) {
+            setLoading(true);
+            alert(err.response.data);
+          }
+        });
+    }
   };
   return (
     <>
@@ -71,10 +123,7 @@ export default function Login() {
           <div className="bg-white px-12 py-12 sm:px-8 shadow-lg rounded-lg">
             <div className="space-y-6">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
+                <label className="block text-sm/6 font-medium text-[#111827]">
                   Email address
                 </label>
                 <div className="mt-2">
@@ -84,31 +133,45 @@ export default function Login() {
                     value={values.email}
                     onChange={(e) => handleOnChange(e)}
                     type="text"
-                    required
-                    autoComplete="email"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                   />
                 </div>
+                {errors.email && (
+                  <span className="text-red text-base sm:text-[10px]">
+                    {errors.email}
+                  </span>
+                )}
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-medium text-[#111827]"
-                >
+                <label className="block text-sm/6 font-medium text-[#111827]">
                   Password
                 </label>
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={values.password}
                     onChange={(e) => handleOnChange(e)}
-                    required
-                    autoComplete="current-password"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                   />
+                  <div
+                    className="absolute right-5 top-2.5 bottom-0 transition duration-700 ease-in-out"
+                    // type="button"
+                    onClick={handleTogglePassword}
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="text-text cursor-pointer" />
+                    ) : (
+                      <FaEye className="text-text cursor-pointer" />
+                    )}
+                  </div>
+                  {/* {errors.password && (
+                    <span className="text-red text-base sm:text-[10px]">
+                      {errors.password}
+                    </span>
+                  )} */}
                 </div>
               </div>
 
@@ -129,7 +192,33 @@ export default function Login() {
                   className="flex w-full justify-center transition rounded-md bg-primary px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-[#B53535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   onClick={handleSubmit}
                 >
-                  Sign in
+                  {!loading ? (
+                    <div className="flex justify-center gap-x-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <p className="opacity-75">Signing in</p>
+                    </div>
+                  ) : (
+                    "Sign in"
+                  )}
                 </button>
               </div>
             </div>

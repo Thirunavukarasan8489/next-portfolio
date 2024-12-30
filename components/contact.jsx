@@ -4,7 +4,6 @@ import Location from "../public/icons/location-icon-svg.svg";
 import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
-import { name } from "file-loader";
 export default function Contact() {
   const [isSaveClick, setIsSaveClick] = useState(false);
   const [errors, setErrors] = useState({});
@@ -64,9 +63,11 @@ export default function Contact() {
         subject: values.subject,
         message: values.message,
       };
-      console.log("myjson : ", myjson);
+      // console.log("myjson : ", myjson);
 
-      const URL = `https://portfolio-backend-five-inky.vercel.app/api/enquiry`;
+      // const URL = `http://localhost:8080/api/contact`;
+      const URL = `${process.env.NEXT_PUBLIC_HOST}/contact`;
+      // const URL = `https://portfolio-backend-five-inky.vercel.app/api/enquiry`;
       axios
         .post(URL, myjson)
         .then((res) => {
@@ -77,7 +78,7 @@ export default function Contact() {
               subject: "",
               message: "",
             });
-            alert("Successfully form submited");
+            alert(res.data);
             setTimeout(() => {
               setLoading(true);
             }, 3000);
@@ -87,11 +88,14 @@ export default function Contact() {
         })
         .catch((err) => {
           setLoading(false);
-          if (err.response.status === 404 || err.response.status === 500) {
-            setTimeout(() => {
-              setAlreadyexist(false);
-            }, 3000);
+          if (err.response.status === 403) {
+            // console.log(err.response.data);
             setLoading(true);
+            alert(`${err.response.data} we will contact you shortly`);
+          }
+          if (err.response.status === 500) {
+            setLoading(true);
+            alert(err.response.data);
           } else {
             alert("Form Not submitted");
           }

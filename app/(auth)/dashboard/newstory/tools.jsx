@@ -56,7 +56,7 @@ export const EDITOR_JS_TOOLS = {
               const result = await response.json();
 
               if (result.success) {
-                console.log("Image uploaded:", result.file.url);
+                // console.log("Image uploaded:", result.file.url);
                 return {
                   success: 1,
                   file: {
