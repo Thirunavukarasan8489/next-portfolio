@@ -7,7 +7,7 @@ import Link from "next/link";
 // import { GoChevronRight } from 'react-icons/go';
 // import BlogHome from '../Blogs/BlogHome';
 export default function BlogNavbar({ navName, Blogdate }) {
-//   console.log(Blogdate);
+  //   console.log(Blogdate);
   const changeFormatDate = (Blogdate) => {
     const date = new Date(Blogdate);
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -211,15 +211,16 @@ export default function BlogNavbar({ navName, Blogdate }) {
             </ul>
           </div>
         </div>
-        <div className="xl:py-8 lg:py-8 md:py-8 mdsm:py-20 sm:py-10">
-          <div>
-            <p className="text-center pb-5 text-h6 font-medium text-textcolor">
-              {Blogdate ? changeFormatDate(Blogdate) : null}
-            </p>
-            <h1 className="font-bold xl:px-14 lg:px-14 md:px-14 mdsm:px-10 sm:px-10 text-center xl:text-3xl lg:text-3xl md:text-3xl mdsm:text-xl sm:text-xl pb-6 text-shadow-xl uppercase">
-              {navName}
-            </h1>
-            {/* <div className="flex justify-center">
+        {Blogdate || navName ? (
+          <div className="xl:py-8 lg:py-8 md:py-8 mdsm:py-20 sm:py-10">
+            <div>
+              <p className="text-center pb-5 text-h6 font-medium text-textcolor">
+                {Blogdate ? changeFormatDate(Blogdate) : null}
+              </p>
+              <h1 className="font-bold xl:px-14 lg:px-14 md:px-14 mdsm:px-10 sm:px-10 text-center xl:text-3xl lg:text-3xl md:text-3xl mdsm:text-xl sm:text-xl pb-6 text-shadow-xl uppercase">
+                {navName}
+              </h1>
+              {/* <div className="flex justify-center">
                             <div className="flex items-center bg-[#f9fafd] rounded-md py-2 px-5 space-x-3">
                                 <Link to={`/`} className="text-text roboto-regular text-base font-medium hover:text-primary">
                                     Thiru
@@ -228,8 +229,9 @@ export default function BlogNavbar({ navName, Blogdate }) {
                                 <p className="text-primary roboto-regular text-base font-medium">Blogs</p>
                             </div>
                         </div> */}
+            </div>
           </div>
-        </div>
+        ) : null}
         {/* <BlogHome /> */}
       </nav>
     </div>

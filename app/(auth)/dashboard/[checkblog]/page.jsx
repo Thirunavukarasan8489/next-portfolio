@@ -1,10 +1,9 @@
-import axios from "axios";
-// import BlogCont from "./blogdynamic";
-import Blogs from "./blogs";
 import encryptdecrypt from "@/utils/encryptdecrypt";
+import Blogss from "./blog";
+import axios from "axios";
 export async function generateMetadata({ params }) {
-  const { blogId } = params;
-  let hashParamId = encryptdecrypt.encryptData(blogId);
+  const { checkblog } = params;
+  let hashParamId = encryptdecrypt.encryptData(checkblog)
   const blog = await axios.get(
     `${process.env.NEXT_PUBLIC_HOST}/blogcontent/${hashParamId}`
   );
@@ -18,7 +17,7 @@ export async function generateMetadata({ params }) {
 export default function page({ params }) {
   return (
     <div>
-      <Blogs blogId={params?.blogId} />
+      <Blogss blogId={params?.checkblog} />
     </div>
   );
 }

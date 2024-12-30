@@ -1,12 +1,18 @@
+import encryptdecrypt from "@/utils/encryptdecrypt";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import encryptdecrypt from "./encryptdecrypt";
-function blogapis() {
+function checkApi() {
   const [getdata, setGetdata] = useState();
   function getBlog() {
-    const URL = `${process.env.NEXT_PUBLIC_HOST}/getblogs`;
+    const token = document.cookie
+      .match(/BLOG_ACTIVE/)
+      .input.replace("BLOG_ACTIVE=", "");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    const URL = `${process.env.NEXT_PUBLIC_HOST}/authuser`;
     axios
-      .get(URL)
+      .get(URL, { headers })
       .then((res) => {
         let inData = JSON.parse(encryptdecrypt.decryptData(res.data));
         // console.log("inData :", inData);
@@ -26,10 +32,10 @@ function blogapis() {
   //     .replace(/\s+/g, "-")
   //     .replace(/-+/g, "-");
   // };
-  const blogLinks = getdata?.map((blog) => ({
+  const checkLinks = getdata?.map((blog) => ({
     ...blog,
-    link: `/blogs/${blog.url}`,
+    link: `/dashboard/${blog.url}`,
   }));
-  return { blogLinks };
+  return { checkLinks };
 }
-export default blogapis;
+export default checkApi;

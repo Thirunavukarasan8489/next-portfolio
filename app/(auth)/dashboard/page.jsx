@@ -1,13 +1,23 @@
-import React from "react";
-import Welocme from "./welocme";
+"use client";
+import { useEffect, useState } from "react";
+// import Welocme from "./welocme";
+import Dashboard from "./dashboard";
 import ProtectedRoute from "./protectedroute";
+// export const metadata = {
+//   title: "Admin Dashboard",
+//   description: "Dashboard for blog writes",
+// };
+export default function Authpage() {
+  const [auth, setAuth] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setAuth(true);
+    }, 1500);
+  }, []);
 
-export default function page() {
   return (
     <div>
-      <ProtectedRoute>
-        <Welocme />
-      </ProtectedRoute>
+      <ProtectedRoute>{auth ? <Dashboard /> : <></>}</ProtectedRoute>
     </div>
   );
 }

@@ -1,12 +1,11 @@
-import React from "react";
+"use client";
 import Editor from "./editor";
 import ProtectedRoute from "../protectedroute";
-
-export default function page() {
+export default function App() {
   return (
     <div>
       <ProtectedRoute>
-        <Editor />
+        <Editor editorBlock="editorjs-container" />
       </ProtectedRoute>
     </div>
   );

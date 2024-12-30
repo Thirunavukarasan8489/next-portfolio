@@ -14,6 +14,14 @@ export default function Blog({ cardsData }) {
       setIsScaled(false);
     }, 150);
   };
+  const formatDateDDMMYYYY = (inputDate) => {
+    const date = new Date(inputDate); // Convert the string into a Date object
+    const day = String(date.getDate()).padStart(2, "0"); // Add leading zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
   return (
     <section id="blog" className="py-20 bg-[#f9fafd]">
       <div>
@@ -35,15 +43,15 @@ export default function Blog({ cardsData }) {
             {cardsData?.map((v, i) => (
               <div
                 key={i}
-                className="bg-white group shadow-lg rounded-lg overflow-hidden transition hover:-translate-y-3 hover:shadow-2xl border-[1px] border-bordercolor duration-300 ease-in-out"
+                className="bg-white p-4 group shadow-lg rounded-lg overflow-hidden transition hover:-translate-y-3 hover:shadow-2xl border-[1px] border-bordercolor duration-300 ease-in-out flex flex-col justify-between"
               >
                 <img
-                  src={v.image}
-                  alt={v.title}
-                  className="w-full h-48 object-cover"
+                  src={v.bannerimg}
+                  alt={v.metatitle}
+                  className="w-full h-48 object-cover rounded-lg transition-all group-hover:scale-105 group-hover:shadow-xl"
                 />
-                <div className="p-4 border-t-2 border-primary">
-                  <div className="flex items-center justify-between text-textblack mb-4">
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between text-textblack mb-4 mt-4">
                     <div className="flex items-center space-x-2 roboto-regular">
                       <FaRegUser />
                       <span>{v.author}</span>
@@ -54,8 +62,8 @@ export default function Blog({ cardsData }) {
                     </div>
                   </div>
                   <hr className="text-bordercolor pb-5" />
-                  <h3 className="text-h6 text-text font-medium mb-5 hover:underline underline-offset-2 group-hover:text-primary">
-                    <a href={v.link}>{v.title}</a>
+                  <h3 className="text-h6 text-text font-medium mb-5 group-hover:underline underline-offset-2 group-hover:text-primary">
+                    <a href={v.link}>{v.metatitle}</a>
                   </h3>
                   <hr className="text-bordercolor pb-5" />
                   <div className="flex justify-between items-center text-sm text-textblack">
@@ -72,7 +80,7 @@ export default function Blog({ cardsData }) {
                     </div>
                     <div className="flex items-center text-base space-x-2 roboto-regular">
                       <MdOutlineDateRange className="text-textblack" />
-                      <span>{v.date}</span>
+                      <span>{formatDateDDMMYYYY(v.date)}</span>
                     </div>
                   </div>
                 </div>

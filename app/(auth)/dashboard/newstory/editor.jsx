@@ -1,961 +1,607 @@
 "use client";
+import React, { memo, useEffect, useRef, useState } from "react";
+import EditorJS from "@editorjs/editorjs";
+import { EDITOR_JS_TOOLS } from "./tools";
+import "./editor.css";
 import axios from "axios";
-import { useState, useRef, useEffect } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { AiOutlinePlus } from "react-icons/ai";
-import {
-  FaRegImages,
-  FaListCheck,
-  FaCode,
-  FaHeading,
-  FaParagraph,
-  FaHighlighter,
-  FaLink,
-  FaXmark,
-} from "react-icons/fa6";
-import { FaBold, FaItalic } from "react-icons/fa6";
-import { MdOutlineHideImage } from "react-icons/md";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-// import EncryptDecrypt from "../Utils/EncryptDecrypt";
 import encryptdecrypt from "@/utils/encryptdecrypt";
-const Editor = () => {
-  const [isAdding, setIsAdding] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
-  const [blocks, setBlocks] = useState([]);
-  const fileInputRef = useRef(null);
-  const clickRef = useRef();
-  const [local, setLocal] = useState();
-  const getLocal = () => {
-    const getUser = localStorage.getItem("BLOG_LOG");
-    const deData = JSON.parse(encryptdecrypt.decryptData(getUser));
-    setLocal(deData);
-  };
-  useEffect(() => {
-    getLocal();
-  }, []);
-  // console.log(local);
-  // Add new block
-  const addBlock = (type) => {
-    let newBlock = {};
-    if (type === "paragraph") {
-      newBlock = {
-        id: Date.now(),
-        type: "paragraph",
-        text: "",
-        highlightedText: [],
-        boldText: [],
-        isEditing: true,
-      };
-    } else if (type === "list") {
-      newBlock = {
-        id: Date.now(),
-        type: "list",
-        items: [],
-        highlightedText: [],
-        boldText: [],
-        isEditing: true,
-      };
-    } else if (type === "codeblock") {
-      newBlock = {
-        id: Date.now(),
-        type: "codeblock",
-        name: "",
-        coding: "",
-        isEditing: true,
-      };
-    } else if (type === "heading") {
-      newBlock = {
-        id: Date.now(),
-        type: "heading",
-        text: "",
-        highlightedText: [],
-        boldText: [],
-        isEditing: true,
-      };
-    } else if (type === "image") {
-      newBlock = {
-        id: Date.now(),
-        type: "image",
-        text: "",
-        alt: "",
-        isEditing: true,
-      };
-    }
-    setBlocks([...blocks, newBlock]);
-    setIsAdding(false);
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", (event) => {
-      if (!clickRef?.current?.contains(event?.target)) {
-        setIsAdding(false);
-      }
-    });
-  });
-
-  // Update block text
-  const updateBlock = (id, newText) => {
-    const updatedBlocks = blocks.map((block) =>
-      block.id === id ? { ...block, ...newText } : block
-    );
-    setBlocks(updatedBlocks);
-  };
-
-  // Delete a block
-  const deleteBlock = (id) => {
-    setBlocks(blocks.filter((block) => block.id !== id));
-  };
-
-  const deleteImage = (id) => {
-    setImage(blocks.filter((block) => block.id !== id));
-    setImage("");
-  };
-
-  // Toggle edit mode
-  const toggleEditMode = (id) => {
-    setBlocks(
-      blocks.map((block) =>
-        block.id === id ? { ...block, isEditing: !block.isEditing } : block
-      )
-    );
-  };
-
-  // Save to localStorage
-  const saveToLocalStorage = () => {
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(";").shift();
-    }
-    const token = getCookie("BLOG_ACTIVE");
-    const textEditorContent = {
-      id: Date.now(),
-      uid: local.id,
-      title: title.toLowerCase(),
-      description,
-      author: local.name,
-      category,
-      image,
-      date: new Date().toLocaleDateString(),
-      blogContent: blocks,
-    };
-    const URL = "http://localhost:8080/api/blogcontent";
-    axios
-      .post(URL, textEditorContent, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((data) => {
-        console.log("Data Posted Sucessfully");
-        alert("Data Posted Sucessfully");
-        console.log(data);
-      })
-      .catch((err) => {
-        console.log("Data Not Posted");
-        alert("Data Not Posted");
-        console.log(err);
-      });
-    localStorage.setItem("BlogData", JSON.stringify(textEditorContent));
-    setBlocks([]);
-    setCategory("");
-    setDescription("");
-    setImage("");
-    setTitle("");
-  };
-
-  // Load from localStorage
-  const loadFromLocalStorage = () => {
-    const savedBlocks = JSON.parse(localStorage.getItem("BlogData"));
-    if (savedBlocks) {
-      setBlocks(savedBlocks);
-      setTitle(savedBlocks.title);
-      setDescription(savedBlocks.description);
-      setCategory(savedBlocks.category);
-      setImage(savedBlocks.image);
-      setBlocks(savedBlocks.blogContent);
-    } else {
-      console.log("No data found in localStorage.");
-    }
-  };
-
-  // Move block for drag-and-drop
-  const moveBlock = (dragIndex, hoverIndex) => {
-    const dragBlock = blocks[dragIndex];
-    const updatedBlocks = [...blocks];
-    updatedBlocks.splice(dragIndex, 1);
-    updatedBlocks.splice(hoverIndex, 0, dragBlock);
-    setBlocks(updatedBlocks);
-  };
-
-  // Handle image upload
-  const handleImageUpload = (event, id) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      updateBlock(id, { text: reader.result });
-    };
-    if (file) {
-      reader?.readAsDataURL(file);
-    } else {
-    }
-  };
-
-  const applyFormat = (format, id) => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return; // Exit if no text selected
-
-    const selectedText = selection.toString().trim(); // Get selected text
-    if (!selectedText) return; // Exit if no valid text is selected
-
-    // Enable design mode for execCommand
-    document.designMode = "on";
-
-    let toggleOff = false; // Variable to track if we are removing the format
-
-    // Handle the formatting with toggle logic
-    switch (format) {
-      case "bold":
-        if (document.queryCommandState("bold")) {
-          document.execCommand("removeFormat", false, null); // Remove bold
-          toggleOff = true;
-        } else {
-          document.execCommand("bold", false, null); // Apply bold
-        }
-        break;
-
-      case "italic":
-        if (document.queryCommandState("italic")) {
-          document.execCommand("removeFormat", false, null); // Remove italic
-          toggleOff = true;
-        } else {
-          document.execCommand("italic", false, null); // Apply italic
-        }
-        break;
-
-      case "highlight":
-        const isHighlighted =
-          window.getComputedStyle(selection.anchorNode.parentNode)
-            .backgroundColor === "rgb(255, 255, 0)"; // Check if text is highlighted
-        if (isHighlighted) {
-          document.execCommand("removeFormat", false, null); // Remove highlight
-          toggleOff = true;
-        } else {
-          document.execCommand("backColor", false, "yellow"); // Apply highlight
-        }
-        break;
-
-      case "link":
-        const url = prompt("Enter the URL for the link:", "https://");
-        if (url) {
-          document.execCommand("createLink", false, url); // Apply link
-        } else {
-          return; // Exit if no URL provided
-        }
-        break;
-
-      default:
-        return; // Exit for unsupported formats
-    }
-    document.designMode = "off"; // Disable design mode after applying execCommand
-
-    // Now, we need to update the blocks array and toggle the array entries
-    const updatedBlocks = blocks.map((block) => {
-      if (block.id === id) {
-        // Clone the boldText and highlightedText arrays
-        const newBoldText = [...block.boldText];
-        const newItalicText = [...(block.italicText || [])]; // Add italic array if not present
-        const newHighlightedText = [...block.highlightedText];
-
-        // Update arrays based on the format and toggle
-        if (format === "bold") {
-          if (toggleOff) {
-            // Remove bold if toggling off
-            const index = newBoldText.indexOf(selectedText);
-            if (index > -1) newBoldText.splice(index, 1); // Remove from array
-          } else {
-            newBoldText.push(selectedText); // Add bold text
-          }
-        }
-
-        if (format === "italic") {
-          if (toggleOff) {
-            // Remove italic if toggling off
-            const index = newItalicText.indexOf(selectedText);
-            if (index > -1) newItalicText.splice(index, 1); // Remove from array
-          } else {
-            newItalicText.push(selectedText); // Add italic text
-          }
-        }
-
-        if (format === "highlight") {
-          if (toggleOff) {
-            // Remove highlight if toggling off
-            const index = newHighlightedText.indexOf(selectedText);
-            if (index > -1) newHighlightedText.splice(index, 1); // Remove from array
-          } else {
-            newHighlightedText.push(selectedText); // Add highlighted text
-          }
-        }
-
-        // Return the updated block with updated arrays
-        return {
-          ...block,
-          boldText: newBoldText, // Update bold text array
-          italicText: newItalicText, // Update italic text array
-          highlightedText: newHighlightedText, // Update highlighted text array
-        };
-      }
-      return block; // Return unchanged block for other blocks
-    });
-
-    setBlocks(updatedBlocks); // Update the state with the modified blocks
-
-    // Clear the selection to avoid text remaining highlighted
-    selection.removeAllRanges();
-  };
-
-  const handleCoverImageUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImage(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-  const renderFormattedText = (text, highlightedText = [], boldText = []) => {
-    // Split text by highlighted and bold text
-    let formattedText = text;
-
-    // Apply highlighted text
-    highlightedText.forEach((highlight) => {
-      const regex = new RegExp(`(${highlight})`, "gi");
-      formattedText = formattedText.replace(regex, "<mark>$1</mark>");
-    });
-
-    // Apply bold text
-    boldText.forEach((bold) => {
-      const regex = new RegExp(`(${bold})`, "gi");
-      formattedText = formattedText.replace(regex, "<strong>$1</strong>");
-    });
-
-    // Using dangerouslySetInnerHTML to render the formatted HTML
-    return { __html: formattedText };
-  };
-  const [copied, setCopied] = useState(false);
-  const handleCopy = (coding) => {
-    const codeText = coding;
-    navigator.clipboard.writeText(codeText).then(() => {
-      setCopied(true);
-      setInterval(() => {
-        setCopied(false);
-      }, 3000);
-    });
-  };
-  return (
-    <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 mdsm:grid-cols-1 sm:grid-cols-1 gap-4 mx-10">
-      <div>
-        {/* Metadata Inputs */}
-        <div className="mb-4">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="block w-full p-2 mb-2 border border-gray rounded"
-            placeholder="Blog Title"
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="block w-full p-2 mb-2 border border-gray rounded"
-            placeholder="Blog Description"
-          />
-          {/* <input
-                        type="text"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                        className="block w-full p-2 mb-2 border border-gray rounded"
-                        placeholder="Author Name"
-                    /> */}
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="block w-full p-2 mb-2 border border-gray rounded"
-            placeholder="Category"
-          />
-          {/* <input type="file" accept="image/*" onChange={handleCoverImageUpload} className="block w-full p-2 mb-2" /> */}
-          {/* {image && <img src={image} alt="Cover" className="mb-4" width="200" />} */}
-
-          {image ? (
-            <div className="flex relative">
-              <img src={image} alt="Cover" draggable="false" className="mb-4" />
-              <button
-                onClick={deleteImage}
-                title="delete"
-                className="absolute p-2 bg-primary text-white right-0 rounded-bl-md hover:bg-white transition duration-300 hover:text-primary"
-              >
-                <FaXmark />
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                <div className="text-center">
-                  <MdOutlineHideImage
-                    aria-hidden="true"
-                    className="mx-auto h-12 w-12 text-gray-300"
-                  />
-                  <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                    >
-                      <span className="text-primary">Upload a file</span>
-                      <input
-                        id="file-upload"
-                        accept="image/*"
-                        onChange={handleCoverImageUpload}
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs leading-5 text-gray-600">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
-              </div>
-              {/* <input type="file" accept="image/*" onChange={handleCoverImageUpload} className="block w-full p-2 mb-2" /> */}
-            </div>
-          )}
-        </div>
-        <div className="max-w-4xl mx-auto">
-          <DndProvider backend={HTML5Backend}>
-            {blocks.map((block, index) => (
-              <DraggableBlock
-                key={block.id}
-                index={index}
-                block={block}
-                moveBlock={moveBlock}
-                updateBlock={updateBlock}
-                deleteBlock={deleteBlock}
-                toggleEditMode={toggleEditMode}
-                applyFormat={applyFormat}
-                handleImageUpload={handleImageUpload}
-                fileInputRef={fileInputRef}
-              />
-            ))}
-          </DndProvider>
-
-          <div ref={clickRef} className="mb-4 relative flex items-center">
-            <button
-              onClick={() => setIsAdding(!isAdding)}
-              title={`${
-                !isAdding
-                  ? "Add an image, heading, paragraphs and videos"
-                  : "Close Menu"
-              }`}
-              className="bg-primary p-3 rounded-full "
-            >
-              <AiOutlinePlus
-                className={`text-white text-h6 ${
-                  isAdding ? "rotate-45 " : "rotate-0"
-                } transition duration-150`}
-              />
-            </button>
-            {isAdding && (
-              <div className="absolute p-3 shadow-lg left-14 space-x-3 rounded z-50 bg-[#f9fafd] border-l-[3px] border-primary">
-                <button
-                  onClick={() => addBlock("heading")}
-                  title="Add Heading"
-                  className="border border-primary text-primary hover:bg-primary hover:text-white hover:border-white p-3 rounded-full"
-                >
-                  <FaHeading />
-                </button>
-                <button
-                  onClick={() => addBlock("paragraph")}
-                  title="Add Paragraph"
-                  className="border border-primary text-primary hover:bg-primary hover:text-white hover:border-white p-3 rounded-full"
-                >
-                  <FaParagraph />
-                </button>
-                <button
-                  onClick={() => addBlock("codeblock")}
-                  title="Add Code Block"
-                  className="border border-primary text-primary hover:bg-primary hover:text-white hover:border-white p-3 rounded-full"
-                >
-                  <FaCode />
-                </button>
-                <button
-                  onClick={() => addBlock("list")}
-                  title="Add List Items"
-                  className="border border-primary text-primary hover:bg-primary hover:text-white hover:border-white p-3 rounded-full"
-                >
-                  <FaListCheck />
-                </button>
-                <button
-                  onClick={() => addBlock("image")}
-                  title="Add Image"
-                  className="border border-primary text-primary hover:bg-primary hover:text-white hover:border-white p-3 rounded-full"
-                >
-                  <FaRegImages />
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-4">
-            <button
-              onClick={() => {
-                saveToLocalStorage();
-              }}
-              className="px-4 py-2 bg-primary text-white rounded-md"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                loadFromLocalStorage();
-              }}
-              className="px-4 py-2 bg-primary text-white rounded-md ml-4"
-            >
-              Load from LocalStorage
-            </button>
-          </div>
-
-          {/* Hidden file input for image upload */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={(event) => handleImageUpload(event, null)}
-          />
-        </div>
-      </div>
-      <div>
-        <h1 className="font-bold text-center text-h3 pb-2 mt-5">{title}</h1>
-        <p className="text-text text-center text-h6 font-medium leading-relaxed tracking-wide pb-3">
-          {description}
-        </p>
-        {/* <p className="text-sm text-gray-500 mb-2">By: {author}</p> */}
-        <p className="text-sm text-gray-500 mb-4">Category: {category}</p>
-        {image && (
-          <div className="flex justify-center">
-            <img
-              src={image}
-              alt="Cover"
-              draggable="false"
-              className="mb-4 rounded-md"
-            />
-          </div>
-        )}
-        <div>
-          {blocks.map((block) => (
-            <div key={block.id} className="mb-4">
-              {block.type === "heading" && (
-                <h2
-                  className="text-2xl font-bold"
-                  dangerouslySetInnerHTML={renderFormattedText(
-                    block.text,
-                    block.highlightedText,
-                    block.boldText
-                  )}
-                />
-              )}
-              {block.type === "paragraph" && (
-                <p
-                  dangerouslySetInnerHTML={renderFormattedText(
-                    block.text,
-                    block.highlightedText,
-                    block.boldText
-                  )}
-                />
-              )}
-              {block.type === "list" && (
-                <ul className="list-disc pl-5">
-                  {block.items.map((item, index) => (
-                    <li
-                      key={index}
-                      dangerouslySetInnerHTML={renderFormattedText(
-                        item,
-                        block.highlightedText,
-                        block.boldText
-                      )}
-                    />
-                  ))}
-                </ul>
-              )}
-              {block.type === "codeblock" && (
-                <div>
-                  {/* <pre className="bg-gray-800 text-white p-4 rounded">
-                                        <code>{block.coding}</code>
-                                    </pre> */}
-                  <div className="relative bg-[#282c34] font-mono sm:p-6 rounded-lg xl:w-[680px] lg:w-[680px]">
-                    <div className="sticky top-0">
-                      <div className="absolute top-0 left-0 bg-primary text-white px-2 py-1 rounded text-sm">
-                        {block.name}
-                      </div>
-                    </div>
-                    <div className="sticky top-0">
-                      <button
-                        onClick={() => handleCopy(block.coding)}
-                        className="absolute top-0 right-0 bg-text hover:bg-textcolor text-white px-2 py-1 rounded text-sm"
-                      >
-                        {copied ? <p>&#x2713; Copied</p> : <p>Copy Code</p>}
-                      </button>
-                    </div>
-                    <SyntaxHighlighter
-                      language="javascript"
-                      style={oneDark}
-                      wrapLongLines
-                      className="xl:!p-[2.5em] lg:!p-[2.5em] md:!p-[2.5em] mdsm:!p-[2.5em] sm:!p-[1em]"
-                    >
-                      {block.coding}
-                    </SyntaxHighlighter>
-                  </div>
-                </div>
-              )}
-              {block.type === "image" && (
-                <div>
-                  <img src={block.text} alt={block.alt} draggable="false" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+import { useRouter, useSearchParams } from "next/navigation";
+const INITIAL_DATA = {
+  time: new Date().getTime(),
+  blocks: [],
 };
+const Editor = ({ editorBlock }) => {
+  const [data, setData] = useState(INITIAL_DATA);
+  const [editorInstance, setEditorInstance] = useState(null);
+  const [isEditorInitialized, setEditorInitialized] = useState(false);
+  const [bannerimg, setBannerimg] = useState();
+  const imgclearRef = useRef();
+  const navigate = useRouter();
+  const urlsearch = useSearchParams();
+  const getEditId = urlsearch.get("edit");
+  const [showEditor, setShowEditor] = useState(false);
+  const getBlogDetails = JSON.parse(
+    encryptdecrypt.decryptData(localStorage.getItem("BLOG_LOG"))
+  );
+  const [values, setValues] = useState({
+    uid: getBlogDetails.id,
+    metatitle: "",
+    metadescription: "",
+    author: getBlogDetails.name,
+    category: "",
+    url: "",
+    ispublished: "",
+  });
 
-const DraggableBlock = ({
-  block,
-  index,
-  moveBlock,
-  updateBlock,
-  deleteBlock,
-  toggleEditMode,
-  applyFormat,
-}) => {
-  const [{ isDragging }, dragRef] = useDrag({
-    type: "block",
-    item: { index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-  const [, dropRef] = useDrop({
-    accept: "block",
-    hover: (draggedItem) => {
-      if (draggedItem.index !== index) {
-        moveBlock(draggedItem.index, index);
-        draggedItem.index = index;
+  const ref = useRef();
+
+  const editById = () => {
+    if (getEditId) {
+      setShowEditor(true);
+      try {
+        const token = document.cookie
+          .match(/BLOG_ACTIVE/)
+          .input.replace("BLOG_ACTIVE=", "");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/editid/${getEditId}`;
+        axios
+          .get(URL, { headers })
+          .then((res) => {
+            let decodeEditData = JSON.parse(
+              encryptdecrypt.decryptData(res.data)
+            );
+            // setting a data to input boxes for edit
+            const blockss = decodeEditData.blogContent[0].blocks.map(
+              (block) => {
+                if (block.type === "list") {
+                  return {
+                    ...block,
+                    data: {
+                      ...block.data,
+                      items: block.data.items.map((item) =>
+                        typeof item === "object" ? item.content : item
+                      ),
+                    },
+                  };
+                }
+                return block;
+              }
+            );
+            setValues(decodeEditData);
+            // setting a image for edit
+            setBannerimg(decodeEditData.bannerimg);
+            // setting a blog content for edit
+            setData({
+              time: new Date().getTime(),
+              blocks: blockss,
+              // blocks: decodeEditData.blogContent[0].blocks.map((v) => v) || [],
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log(error);
       }
-    },
-  });
-  const handelImage = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      updateBlock(block.id, { text: reader.result });
+    } else {
+      setShowEditor(false);
+      // console.log("No");
+    }
+  };
+  useEffect(() => {
+    editById();
+  }, []);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (editorInstance && data) {
+  //       editorInstance?.blocks
+  //         ?.render(data) // Dynamically load content into the editor
+  //         .catch((err) => console.error("Failed to render editor data:", err));
+  //     }
+  //   }, 500);
+  // }, [data, editorInstance]);
+
+  useEffect(() => {
+    // Render the initial data only once when editorInstance and data are ready
+    if (showEditor) {
+      setTimeout(() => {
+        if (editorInstance && data && !isEditorInitialized) {
+          editorInstance?.blocks
+            ?.render(data) // Dynamically load initial content into the editor
+            .then(() => {
+              // console.log("Initial data successfully loaded into Editor.js");
+              setEditorInitialized(true); // Mark as initialized
+            })
+            .catch((err) =>
+              console.error("Failed to render editor data:", err)
+            );
+        }
+      }, 500);
+    }
+  }, [editorInstance, data, isEditorInitialized]);
+
+  // useEffect(() => {
+  //   if (editorInstance && data.blocks && data.blocks.length > 0) {
+  //     // Clear the editor and render new blocks
+  //     editorInstance
+  //       .clear()
+  //       .then(() => editorInstance.blocks.render(data.blocks))
+  //       .catch((err) =>
+  //         console.error("Failed to render blocks in editor:", err)
+  //       );
+  //   }
+  // }, [data, editorInstance]);
+
+  useEffect(() => {
+    if (!ref.current) {
+      const editor = new EditorJS({
+        holder: "editorjs-container",
+        data: data,
+        tools: EDITOR_JS_TOOLS,
+        placeholder: "Start typing your story...",
+        async onChange(api) {
+          try {
+            const updatedData = await api.saver.save();
+            setData(updatedData); // Update state with new blocks
+          } catch (error) {
+            console.error("Error saving editor data:", error);
+          }
+        },
+      });
+      ref.current = editor;
+      setEditorInstance(editor);
+    }
+
+    return () => {
+      if (ref.current && ref.current.destroy) {
+        ref.current.destroy();
+        ref.current = null;
+      }
     };
+  }, []);
+
+  const resizeAndCompressImage = (img, targetSizeKB) => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      let width = img.width;
+      let height = img.height;
+      const maxDimension = 1000; // Maximum width/height in pixels
+
+      // Resize image to fit within the maxDimension
+      if (width > height) {
+        if (width > maxDimension) {
+          height *= maxDimension / width;
+          width = maxDimension;
+        }
+      } else {
+        if (height > maxDimension) {
+          width *= maxDimension / height;
+          height = maxDimension;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compress = (quality) => {
+        return canvas.toDataURL("image/jpeg", quality);
+      };
+
+      let quality = 0.9; // Initial quality
+      let compressedImage = compress(quality);
+
+      // Iteratively reduce quality to achieve the target size
+      const targetSizeBytes = targetSizeKB * 1024;
+      while (compressedImage.length > targetSizeBytes && quality > 0.1) {
+        quality -= 0.1;
+        compressedImage = compress(quality);
+      }
+
+      resolve(compressedImage);
+    });
+  };
+
+  const handleBannerImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = async () => {
+        const compressedImage = await resizeAndCompressImage(img, 100); // Compress to ~100KB
+        const compressedImageSize = (compressedImage.length * (3 / 4)) / 1024; // Size in KB
+        if (compressedImageSize <= 100) {
+          console.log(
+            `Image compressed successfully to ~${compressedImageSize.toFixed(
+              2
+            )} KB`
+          );
+          setBannerimg(compressedImage);
+        } else {
+          alert("Unable to compress the image to the desired size.");
+          imgclearRef.current.value = null;
+          setBannerimg("");
+        }
+      };
+    };
+    // reader.onloadend = () => {
+    //   setBannerimg(reader.result);
+    // };
     reader.readAsDataURL(file);
   };
-  const codeLanguage = [
-    "javaScript",
-    "python",
-    "java",
-    "php",
-    "C",
-    "C++",
-    "TypeScript",
-    "Kotlin",
-    "Dart",
-    "Ruby",
-    "sql",
-    "mongoDb",
-  ];
-  const textareaRef = useRef(null);
-  // Function to auto-resize the textarea
-  const handleResize = (e) => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      // Ensure textarea exists before accessing its style
-      textarea.style.height = "auto"; // Reset height to auto
-      textarea.style.height = `${textarea.scrollHeight}px`; // Set height to scrollHeight
-    }
-    updateBlock(block.id, { coding: e.target.value });
+
+  const handelChange = (e) => {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value });
   };
 
-  // Adjust the height when component mounts (in case of existing content)
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      // Ensure textarea exists
-      textarea.style.height = `${textarea.scrollHeight}px`;
+  const handleSave = async (publishStatus) => {
+    if (ref.current) {
+      try {
+        const outputData = await ref.current.save();
+        const url = values.metatitle
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-.]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+        let metaDatas = {
+          uid: getBlogDetails.id,
+          url: url,
+          metatitle: values.metatitle,
+          metadescription: values.metadescription,
+          author: getBlogDetails.name,
+          bannerimg: bannerimg,
+          category: values.category,
+          blogContent: outputData,
+          ispublished: publishStatus,
+        };
+
+        const enData = encryptdecrypt.encryptData(JSON.stringify(metaDatas));
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/blogcontent`;
+        const token = document.cookie
+          .match(/BLOG_ACTIVE/)
+          .input.replace("BLOG_ACTIVE=", "");
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        axios
+          .post(URL, { data: enData }, { headers })
+          .then((res) => {
+            if (res.status === 200) {
+              alert(res.data);
+              setBannerimg(""); // Clear banner image
+              setValues({
+                uid: "",
+                metatitle: "",
+                metadescription: "",
+                author: "",
+                category: "",
+                url: "",
+              });
+              imgclearRef.current.value = null;
+              setData(INITIAL_DATA); // Clear editor content
+              ref.current.clear(); // Clear editor instance content
+              console.log("Data posted successfully");
+              navigate.push("/dashboard");
+            } else {
+              console.log("Data not posted");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.error("Saving failed:", error);
+      }
     }
-  }, []);
-  // useEffect(() => {
-  //     const textarea = document.getElementById('autoresizing');
-  //     textarea.addEventListener('input', autoResize, false);
-  //     function autoResize() {
-  //         this.style.height = 'auto';
-  //         this.style.height = this.scrollHeight + 'px';
-  //     }
-  // });
+  };
+
+  const handleUpdateBlog = async () => {
+    if (ref.current) {
+      try {
+        const outputData = await ref.current.save();
+        const url = values.metatitle
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-.]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+
+        let metaDatas = {
+          url: url,
+          metatitle: values.metatitle,
+          metadescription: values.metadescription,
+          author: getBlogDetails.name,
+          bannerimg: bannerimg,
+          category: values.category,
+          blogContent: outputData,
+        };
+        const enData = encryptdecrypt.encryptData(JSON.stringify(metaDatas));
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/edit/${getEditId}`;
+        const token = document.cookie
+          .match(/BLOG_ACTIVE/)
+          .input.replace("BLOG_ACTIVE=", "");
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        axios
+          .put(URL, { data: enData }, { headers })
+          .then((res) => {
+            // console.log(res);
+            if (res.status === 200) {
+              alert(res.data);
+              navigate.push("/dashboard");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    navigate.back();
+  };
+
   return (
-    <div className="">
-      <div
-        ref={(node) => dragRef(dropRef(node))}
-        style={{ opacity: isDragging ? 0.5 : 1 }}
-        className="mb-4 pb-2 relative"
-      >
-        {/* Edit or View Mode */}
-        {block.isEditing ? (
-          <div>
-            {block.type === "heading" && (
+    <div>
+      {showEditor ? (
+        <>
+          <div className="flex justify-center py-10">
+            <div className="space-y-6">
               <div>
-                {/* <input
-                                    type="text"
-                                    className="w-full text-2xl font-bold border border-textcolor rounded-md p-4"
-                                    value={block.text}
-                                    onChange={(e) => updateBlock(block.id, { text: e.target.value })}
-                                    placeholder="Heading"
-                                /> */}
-                <div
-                  contentEditable
-                  className="w-full text-2xl font-bold border border-textcolor rounded-md p-4 mb-3"
-                  onBlur={(e) =>
-                    updateBlock(block.id, { text: e.target.innerText })
-                  }
-                  placeholder="Heading"
-                  dangerouslySetInnerHTML={{ __html: block.text }}
-                />
-                {/* Add toolbar for text formatting */}
-                <div className="space-x-3">
-                  <button
-                    onClick={() => applyFormat("bold", block.id)}
-                    title="Apply Bold"
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaBold className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("italic", block.id)}
-                    title="Italic"
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaItalic className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("highlight", block.id)}
-                    title="Highlight Marker"
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaHighlighter className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("link", block.id)}
-                    title="Add Link"
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaLink className="text-primary" />
-                  </button>
-                </div>
-              </div>
-            )}
-            {block.type === "paragraph" && (
-              <div>
-                {/* <textarea
-                                    type="text"
-                                    className="w-full border border-textcolor rounded-md p-4"
-                                    value={block.text}
-                                    onChange={(e) => updateBlock(block.id, { text: e.target.value })}
-                                    placeholder="Write your paragraph here..."
-                                /> */}
-                <div
-                  contentEditable
-                  className="w-full border border-textcolor rounded-md p-4 mb-3"
-                  onBlur={(e) =>
-                    updateBlock(block.id, { text: e.target.innerText })
-                  }
-                  placeholder="Write your paragraph here..."
-                  dangerouslySetInnerHTML={{ __html: block.text }}
-                />
-                <div className="space-x-3">
-                  <button
-                    onClick={() => applyFormat("bold", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaBold className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("italic", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaItalic className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("highlight", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaHighlighter className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("link", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaLink className="text-primary" />
-                  </button>
-                </div>
-              </div>
-            )}
-            {block.type === "codeblock" && (
-              <div>
-                <select
-                  onChange={(e) =>
-                    updateBlock(block.id, { name: e.target.value })
-                  }
+                <label
+                  htmlFor="email"
+                  className="block text-sm/6 font-medium text-[#111827]"
                 >
-                  <option style={{ display: "none" }}>Select Language</option>
-                  {codeLanguage.map((v, i) => (
-                    <option key={i} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-                <textarea
-                  // id="autoresizing"
-                  ref={textareaRef}
-                  type="text"
-                  className="w-full border border-textcolor rounded-md p-4"
-                  value={block.text}
-                  onChange={handleResize}
-                  // onChange={(e) => updateBlock(block.id, { coding: e.target.value })}
-                  placeholder="Write your code here..."
+                  Meta Title <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="metatitle"
+                  value={values.metatitle}
+                  onChange={(e) => {
+                    handelChange(e);
+                    values.metatitle = e.target.value;
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                 />
               </div>
-            )}
-            {block.type === "list" && (
               <div>
-                <textarea
-                  type="text"
-                  className="w-full border border-textcolor rounded-md p-4"
-                  value={block.text}
-                  onChange={(e) =>
-                    updateBlock(block.id, { items: e.target.value.split("\n") })
-                  }
-                  placeholder="Enter list items (one per line)"
+                <label
+                  htmlFor="metadescription"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Meta Description <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="metadescription"
+                  value={values.metadescription}
+                  onChange={(e) => {
+                    handelChange(e);
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                 />
-                <div className="space-x-3">
-                  <button
-                    onClick={() => applyFormat("bold", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaBold className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("italic", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaItalic className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("highlight", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaHighlighter className="text-primary" />
-                  </button>
-                  <button
-                    onClick={() => applyFormat("link", block.id)}
-                    className="border border-primary p-1.5 rounded-full"
-                  >
-                    <FaLink className="text-primary" />
-                  </button>
-                </div>
               </div>
-            )}
-            {block.type === "image" && (
               <div>
-                {block.text ? (
-                  <div>
-                    <img
-                      src={block.text}
-                      alt="Uploaded"
-                      draggable="false"
-                      className="w-full border border-textcolor rounded-md px-4"
-                    />
-                  </div>
-                ) : (
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handelImage}
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
-                    />
-                  </div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Enter your Blog Category{" "}
+                  <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="category"
+                  value={values.category}
+                  onChange={(e) => {
+                    handelChange(e);
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="file_input"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Select your Blog Thumbnail Image{" "}
+                  <span className="text-primary ">*</span>
+                </label>
+                {bannerimg && (
+                  <img
+                    src={bannerimg}
+                    alt="Cover"
+                    className="py-4"
+                    width="200"
+                  />
                 )}
                 <input
-                  onChange={(e) =>
-                    updateBlock(block.id, { alt: e.target.value })
-                  }
-                  placeholder="Enter Alt text"
-                  className="border border-textcolor rounded-md focus:outline-0 px-4 py-1"
-                  required
+                  ref={imgclearRef}
+                  id="file_input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    handleBannerImageUpload(e);
+                  }}
+                  className="block w-full text-sm text-textblack
+        file:me-4 file:py-2 file:px-4
+        file:rounded-lg file:border-0
+        file:text-sm file:font-semibold
+        file:bg-primary file:text-white
+        hover:file:bg-[#B53535]
+        file:disabled:opacity-50 file:disabled:pointer-events-none
+        dark:text-neutral-500
+        dark:file:bg-blue-500
+        dark:hover:file:bg-primary
+      "
                 />
               </div>
-            )}
+            </div>
           </div>
-        ) : (
           <div>
-            {block.type === "heading" && (
-              <h2 className="text-2xl">{block.text}</h2>
-            )}
-            {block.type === "paragraph" && <p>{block.text}</p>}
-            {block.type === "codeblock" && (
-              <pre className="bg-gray-100 p-4">{block.text}</pre>
-            )}
-            {block.type === "list" && (
-              <ul className="list-disc pl-5">
-                {block.items.map((v, i) => (
-                  <li key={i}>{v}</li>
-                ))}
-              </ul>
-            )}
-            {block.type === "image" && (
-              <img
-                src={block.text}
-                alt="Uploaded"
-                draggable="false"
-                className="w-full"
-              />
-            )}
+            <p className="text-center font-medium text-[#111827] pb-10">
+              Edit your Story here 👇
+            </p>
+            <div id={editorBlock}></div>
+            <div className="py-5 fixed bottom-0 w-full z-10 bg-[#f9fafd] border-y-primary border-t-2 ">
+              <div className="flex justify-center space-x-8">
+                <button
+                  onClick={handleUpdateBlog}
+                  className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
+                >
+                  Update Blog
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
-        )}
-
-        <div className="flex space-x-2 justify-end">
-          {/* <button onClick={() => toggleEditMode(block.id)} className="bg-primary text-white border rounded-md px-2 py-1">
-                        {block.isEditing ? 'Save' : 'Edit'}
-                    </button> */}
-          <button
-            onClick={() => deleteBlock(block.id)}
-            className="border border-red text-red rounded-md px-2 py-1"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="flex justify-center py-10">
+            <div className="space-y-6">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Meta Title <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="metatitle"
+                  value={values.metatitle}
+                  onChange={(e) => {
+                    handelChange(e);
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="metadescription"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Meta Description <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="metadescription"
+                  value={values.metadescription}
+                  onChange={(e) => {
+                    handelChange(e);
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Enter your Blog Category{" "}
+                  <span className="text-primary ">*</span>
+                </label>
+                <input
+                  name="category"
+                  value={values.category}
+                  onChange={(e) => {
+                    handelChange(e);
+                  }}
+                  className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="file_input"
+                  className="block text-sm/6 font-medium text-[#111827]"
+                >
+                  Select your Blog Thumbnail Image{" "}
+                  <span className="text-primary ">*</span>
+                </label>
+                {bannerimg && (
+                  <img
+                    src={bannerimg}
+                    alt="Cover"
+                    className="py-4"
+                    width="200"
+                  />
+                )}
+                <input
+                  ref={imgclearRef}
+                  id="file_input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    handleBannerImageUpload(e);
+                  }}
+                  className="block w-full text-sm text-textblack
+        file:me-4 file:py-2 file:px-4
+        file:rounded-lg file:border-0
+        file:text-sm file:font-semibold
+        file:bg-primary file:text-white
+        hover:file:bg-[#B53535]
+        file:disabled:opacity-50 file:disabled:pointer-events-none
+        dark:text-neutral-500
+        dark:file:bg-blue-500
+        dark:hover:file:bg-primary
+      "
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <p className="text-center font-medium text-[#111827] pb-10">
+              Start Write your Story here 👇
+            </p>
+            <div id={editorBlock}></div>
+            <div className="py-5 fixed bottom-0 w-full z-10 bg-[#f9fafd] border-y-primary border-t-2 ">
+              <div className="flex justify-center space-x-8">
+                <button
+                  onClick={() => {
+                    handleSave("Published");
+                  }}
+                  className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
+                >
+                  Save & Publish
+                </button>
+                <button
+                  onClick={() => {
+                    handleSave("Unpublished");
+                  }}
+                  className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
+                >
+                  Save Only
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default Editor;
+export default memo(Editor);

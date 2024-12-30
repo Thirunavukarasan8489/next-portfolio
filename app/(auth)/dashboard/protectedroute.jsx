@@ -4,6 +4,7 @@ import { useEffect } from "react";
 export default function ProtectedRoute({ children }) {
   const router = useRouter();
   useEffect(() => {
+    // First Chek the cookie and localStorage for login
     const isAuthenticated =
       !!document.cookie.match(/BLOG_ACTIVE/) &&
       !!localStorage.getItem("BLOG_LOG");

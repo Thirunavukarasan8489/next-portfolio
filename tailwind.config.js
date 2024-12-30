@@ -17,6 +17,8 @@ module.exports = {
       // => @media (min-width: 1024px) { ... }
       xl: "1280px",
       // => @media (min-width: 1280px) { ... }
+      "2xl": "1536px",
+      // => @media (min-width: 1536px) { ... }
     },
     colors: {
       primary: "#E54B4B",
@@ -24,7 +26,7 @@ module.exports = {
       text: "#3C4858",
       white: "#fff",
       textblack: "#161D2D",
-      offwhit: "FFFAFA",
+      offwhit: "#FFFAFA",
       gray: "#1f2937",
       bordercolor: "#e9ecef",
       red: "#FF0000",
