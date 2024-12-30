@@ -6,7 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState, useEffect, useMemo } from "react";
 import Footer from "@/components/footer";
-
+import Image from "next/image";
 const headingSizeMap = {
   1: "text-4xl",
   2: "text-3xl",
@@ -53,9 +53,15 @@ const Paragraph = ({ data }) => {
   );
 };
 
-const Image = ({ data }) => (
+const ImageComp = ({ data }) => (
   <div className="pb-8">
-    <img src={data.file.url} alt={data.caption} className="rounded-lg w-full" />
+    <Image
+      src={data.file.url}
+      alt={data.caption}
+      width={768}
+      height={439}
+      className="rounded-lg w-full"
+    />
   </div>
 );
 
@@ -119,7 +125,7 @@ const CodeBlock = ({ data, name }) => {
 const componentsMap = {
   header: Header,
   paragraph: Paragraph,
-  image: Image,
+  image: ImageComp,
   list: List,
   code: CodeBlock,
   delimiter: Delimiter,

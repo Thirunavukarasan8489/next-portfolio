@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ["localhost"],
+  },
   webpack: (config, { isServer }) => {
     config.module.rules.push({
       test: /\.pdf$/, // Test for PDF file types

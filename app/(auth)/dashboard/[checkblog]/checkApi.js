@@ -1,7 +1,7 @@
-import encryptdecrypt from "@/utils/encryptdecrypt";
 import axios from "axios";
 import { useState, useEffect } from "react";
-function checkApi() {
+import encryptdecrypt from "@/utils/encryptdecrypt";
+function useCheckApi() {
   const [getdata, setGetdata] = useState();
   function getBlog() {
     const token = document.cookie
@@ -38,4 +38,4 @@ function checkApi() {
   }));
   return { checkLinks };
 }
-export default checkApi;
+export default useCheckApi;

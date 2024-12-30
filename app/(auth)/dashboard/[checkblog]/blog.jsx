@@ -6,7 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState, useEffect, useMemo } from "react";
 import Footer from "@/components/footer";
-import checkApi from "./checkApi";
+import useCheckApi from "./checkApi";
 
 const headingSizeMap = {
   1: "text-4xl",
@@ -133,11 +133,9 @@ const RenderComponent = ({ block }) => {
 };
 
 export default function Blogss({ blogId }) {
-  // console.log("blogId : ", blogId);
   const [loading, setLoading] = useState(true);
   const [blog, setBlog] = useState(null);
-  //   const { blogLinks } = blogapis();
-  const { checkLinks } = checkApi();
+  const { checkLinks } = useCheckApi();
   const [cachedBlogLinks, setCachedBlogLinks] = useState(null);
 
   // useEffect(() => {

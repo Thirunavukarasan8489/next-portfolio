@@ -5,6 +5,7 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { FaChevronRight } from "react-icons/fa";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 // import { Link } from "react-router-dom";
 export default function Blog({ cardsData }) {
   const [isScaled, setIsScaled] = useState(false);
@@ -45,9 +46,11 @@ export default function Blog({ cardsData }) {
                 key={i}
                 className="bg-white p-4 group shadow-lg rounded-lg overflow-hidden transition hover:-translate-y-3 hover:shadow-2xl border-[1px] border-bordercolor duration-300 ease-in-out flex flex-col justify-between"
               >
-                <img
+                <Image
                   src={v.bannerimg}
                   alt={v.metatitle}
+                  width={350}
+                  height={192}
                   className="w-full h-48 object-cover rounded-lg transition-all group-hover:scale-105 group-hover:shadow-xl"
                 />
                 <div className="mt-auto">
