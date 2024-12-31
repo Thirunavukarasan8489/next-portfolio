@@ -37,27 +37,35 @@ export default function Register() {
     let pass = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/; // Regex for password validation
     if (!values.name) {
       error.name = "Enter Your Name";
+      setLoading(true);
     } else if (!regex.test(values.name)) {
       error.name = "Name must contain alphabets only";
+      setLoading(true);
     }
 
     if (!values.email) {
       error.email = "Enter Your Email";
+      setLoading(true);
     } else if (!emailRegex.test(values.email)) {
       error.email = "Enter a valid email address";
+      setLoading(true);
     }
 
     if (!values.phone) {
       error.phone = "Enter Your Phone Number";
+      setLoading(true);
     } else if (!numberRegex.test(values.phone)) {
       error.phone = "Enter a valid phone number";
+      setLoading(true);
     }
 
     if (!values.password) {
       error.password = "Enter Your New Password";
+      setLoading(true);
     } else if (!pass.test(values.password)) {
       error.password =
         "Minimum eight characters, at least one letter, one number and one special character";
+      setLoading(true);
     }
 
     return error;
@@ -274,7 +282,6 @@ export default function Register() {
                         />
                         <path
                           className="opacity-75"
-
                           fill="currentColor"
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         />

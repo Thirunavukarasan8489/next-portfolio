@@ -41,10 +41,11 @@ export default function Login() {
       error.email = "Enter a valid email address";
       setLoading(true);
     }
-    // if (!values.password) {
-    //   error.password = "Enter Your New Password";
-    //   setLoading(true);
-    // } else if (!pass.test(values.password)) {
+    if (!values.password) {
+      error.password = "Enter Your New Password";
+      setLoading(true);
+    }
+    // else if (!pass.test(values.password)) {
     //   error.password =
     //     "Minimum eight characters, at least one letter, one number and one special character";
     //   setLoading(true);
@@ -167,11 +168,11 @@ export default function Login() {
                       <FaEye className="text-text cursor-pointer" />
                     )}
                   </div>
-                  {/* {errors.password && (
+                  {errors.password && (
                     <span className="text-red text-base sm:text-[10px]">
                       {errors.password}
                     </span>
-                  )} */}
+                  )}
                 </div>
               </div>
 
