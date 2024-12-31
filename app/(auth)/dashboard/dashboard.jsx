@@ -69,10 +69,13 @@ export default function Dashboard() {
   const getUserBlog = () => {
     if (typeof window !== "undefined") {
       try {
+        // const token = document.cookie
+        //   .match(/BLOG_ACTIVE/)
+        //   .input.replace("BLOG_ACTIVE=", "");
         const token = document.cookie
-          .match(/BLOG_ACTIVE/)
-          .input.replace("__vercel_toolbar=1; BLOG_ACTIVE=", "");
-        console.log("Real Token : ", document.cookie.match(/BLOG_ACTIVE/).input);
+          .split("; ") // Split the cookies into an array of individual cookies
+          .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+          ?.split("=")[1]; // Extract the value (the token)
         console.log("Token : ", token);
         const headers = {
           Authorization: `Bearer ${token}`,
