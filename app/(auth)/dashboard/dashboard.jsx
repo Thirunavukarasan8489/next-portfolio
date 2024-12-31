@@ -72,6 +72,7 @@ export default function Dashboard() {
         const token = document.cookie
           .match(/BLOG_ACTIVE/)
           .input.replace("BLOG_ACTIVE=", "");
+        console.log("Real Token : ", document.cookie.match(/BLOG_ACTIVE/));
         console.log("Token : ", token);
         const headers = {
           Authorization: `Bearer ${token}`,
