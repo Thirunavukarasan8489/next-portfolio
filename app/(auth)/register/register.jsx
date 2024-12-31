@@ -93,40 +93,40 @@ export default function Register() {
         email: values.email,
         password: values.password,
       };
-      // try {
-      //   let data = encryptdecrypt.encryptData(JSON.stringify(myjson));
-      //   const URL = `${process.env.NEXT_PUBLIC_HOST}/create`;
-      //   axios
-      //     .post(URL, { data: data })
-      //     .then((res) => {
-      //       if (res.status === 200) {
-      //         alert(res.data);
-      //         setValues({
-      //           name: "",
-      //           email: "",
-      //           phone: "",
-      //           password: "",
-      //         });
-      //         setTimeout(() => {
-      //           setLoading(true);
-      //         }, 2000);
-      //         navigate.push("/login");
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       setLoading(false);
-      //       if (err.response.status === 409) {
-      //         setLoading(true);
-      //         alert(err.response.data);
-      //       }
-      //       if (err.response.status === 500) {
-      //         setLoading(true);
-      //         alert(err.response.data);
-      //       }
-      //     });
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        let data = encryptdecrypt.encryptData(JSON.stringify(myjson));
+        const URL = `${process.env.NEXT_PUBLIC_HOST}/create`;
+        axios
+          .post(URL, { data: data })
+          .then((res) => {
+            if (res.status === 200) {
+              alert(res.data);
+              setValues({
+                name: "",
+                email: "",
+                phone: "",
+                password: "",
+              });
+              setTimeout(() => {
+                setLoading(true);
+              }, 2000);
+              navigate.push("/login");
+            }
+          })
+          .catch((err) => {
+            setLoading(false);
+            if (err.response.status === 409) {
+              setLoading(true);
+              alert(err.response.data);
+            }
+            if (err.response.status === 500) {
+              setLoading(true);
+              alert(err.response.data);
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   return (
