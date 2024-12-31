@@ -1,4 +1,4 @@
-// import localFont from "next/font/local";
+import localFont from "next/font/local";
 import "./globals.css";
 
 // const geistSans = localFont({
@@ -21,11 +21,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
-        {children}
-      </body>
+      <meta
+        name="google-site-verification"
+        content="FaRGbsXruH3bBuhj1NuwdvNp9ndwFuLeQj7V3SJWtoI"
+      />
+      <body className={`antialiased`}>{children}</body>
     </html>
   );
 }
