@@ -48,6 +48,9 @@ export const EDITOR_JS_TOOLS = {
                 `${process.env.NEXT_PUBLIC_HOST}/uploadFile`,
                 {
                   method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
                   body: formData,
                   headers: headers,
                 }
