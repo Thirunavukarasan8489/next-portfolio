@@ -45,9 +45,13 @@ const Editor = ({ editorBlock }) => {
     if (typeof window !== "undefined" && getEditId) {
       setShowEditor(true);
       try {
+        // const token = document.cookie
+        //   .match(/BLOG_ACTIVE/)
+        //   .input.replace("BLOG_ACTIVE=", "");
         const token = document.cookie
-          .match(/BLOG_ACTIVE/)
-          .input.replace("BLOG_ACTIVE=", "");
+          .split("; ") // Split the cookies into an array of individual cookies
+          .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+          ?.split("=")[1]; // Extract the value (the token)
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -114,17 +118,15 @@ const Editor = ({ editorBlock }) => {
     // Render the initial data only once when editorInstance and data are ready
     if (showEditor) {
       // setTimeout(() => {
-        if (editorInstance && data && !isEditorInitialized) {
-          editorInstance?.blocks
-            ?.render(data) // Dynamically load initial content into the editor
-            .then(() => {
-              // console.log("Initial data successfully loaded into Editor.js");
-              setEditorInitialized(true); // Mark as initialized
-            })
-            .catch((err) =>
-              console.error("Failed to render editor data:", err)
-            );
-        }
+      if (editorInstance && data && !isEditorInitialized) {
+        editorInstance?.blocks
+          ?.render(data) // Dynamically load initial content into the editor
+          .then(() => {
+            // console.log("Initial data successfully loaded into Editor.js");
+            setEditorInitialized(true); // Mark as initialized
+          })
+          .catch((err) => console.error("Failed to render editor data:", err));
+      }
       // }, 500);
     }
   }, [editorInstance, data, isEditorInitialized]);
@@ -273,9 +275,14 @@ const Editor = ({ editorBlock }) => {
 
         const enData = encryptdecrypt.encryptData(JSON.stringify(metaDatas));
         const URL = `${process.env.NEXT_PUBLIC_HOST}/blogcontent`;
-        const token = document.cookie
-          .match(/BLOG_ACTIVE/)
-          .input.replace("BLOG_ACTIVE=", "");
+        // const token = document.cookie
+        //   .match(/BLOG_ACTIVE/)
+        //   .input.replace("BLOG_ACTIVE=", "");
+
+          const token = document.cookie
+          .split("; ") // Split the cookies into an array of individual cookies
+          .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+          ?.split("=")[1]; // Extract the value (the token)
 
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -334,10 +341,13 @@ const Editor = ({ editorBlock }) => {
         };
         const enData = encryptdecrypt.encryptData(JSON.stringify(metaDatas));
         const URL = `${process.env.NEXT_PUBLIC_HOST}/edit/${getEditId}`;
+        // const token = document.cookie
+        //   .match(/BLOG_ACTIVE/)
+        //   .input.replace("BLOG_ACTIVE=", "");
         const token = document.cookie
-          .match(/BLOG_ACTIVE/)
-          .input.replace("BLOG_ACTIVE=", "");
-
+          .split("; ") // Split the cookies into an array of individual cookies
+          .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+          ?.split("=")[1]; // Extract the value (the token)
         const headers = {
           Authorization: `Bearer ${token}`,
         };

@@ -134,9 +134,13 @@ export default function Dashboard() {
   const getPublishedUnpublished = async () => {
     if (typeof window === "undefined") return;
     try {
+      // const token = document.cookie
+      //   .match(/BLOG_ACTIVE/)
+      //   ?.input?.replace("BLOG_ACTIVE=", "");
       const token = document.cookie
-        .match(/BLOG_ACTIVE/)
-        ?.input?.replace("BLOG_ACTIVE=", "");
+        .split("; ") // Split the cookies into an array of individual cookies
+        .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+        ?.split("=")[1]; // Extract the value (the token)
       if (!token) return;
 
       const headers = { Authorization: `Bearer ${token}` };
@@ -172,9 +176,13 @@ export default function Dashboard() {
     setPublishStatus((prev) => ({ ...prev, [id]: newStatus }));
 
     try {
+      // const token = document.cookie
+      //   .match(/BLOG_ACTIVE/)
+      //   ?.input?.replace("BLOG_ACTIVE=", "");
       const token = document.cookie
-        .match(/BLOG_ACTIVE/)
-        ?.input?.replace("BLOG_ACTIVE=", "");
+        .split("; ") // Split the cookies into an array of individual cookies
+        .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+        ?.split("=")[1]; // Extract the value (the token)
       if (!token) return;
 
       const headers = { Authorization: `Bearer ${token}` };
@@ -192,9 +200,14 @@ export default function Dashboard() {
   // Handle delete
   const handleDelete = async (id) => {
     try {
+      // const token = document.cookie
+      //   .match(/BLOG_ACTIVE/)
+      //   ?.input?.replace("BLOG_ACTIVE=", "");
+
       const token = document.cookie
-        .match(/BLOG_ACTIVE/)
-        ?.input?.replace("BLOG_ACTIVE=", "");
+        .split("; ") // Split the cookies into an array of individual cookies
+        .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+        ?.split("=")[1]; // Extract the value (the token)
       if (!token) return;
 
       const headers = { Authorization: `Bearer ${token}` };

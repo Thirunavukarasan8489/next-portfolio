@@ -4,9 +4,13 @@ import encryptdecrypt from "@/utils/encryptdecrypt";
 function useCheckApi() {
   const [getdata, setGetdata] = useState();
   function getBlog() {
+    // const token = document.cookie
+    //   .match(/BLOG_ACTIVE/)
+    //   .input.replace("BLOG_ACTIVE=", "");
     const token = document.cookie
-      .match(/BLOG_ACTIVE/)
-      .input.replace("BLOG_ACTIVE=", "");
+      .split("; ") // Split the cookies into an array of individual cookies
+      .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
+      ?.split("=")[1]; // Extract the value (the token)
     const headers = {
       Authorization: `Bearer ${token}`,
     };
