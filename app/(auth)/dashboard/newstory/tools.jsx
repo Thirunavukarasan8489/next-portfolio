@@ -33,42 +33,25 @@ export const EDITOR_JS_TOOLS = {
         async uploadByFile(file) {
           if (typeof window !== "undefined") {
             try {
-              // Upload the file to the backend
-              const token = document.cookie
-                .match(/BLOG_ACTIVE/)
-                .input.replace("BLOG_ACTIVE=", "");
-
-              const headers = {
-                Authorization: `Bearer ${token}`,
+              // Convert the file to a base64 string
+              const toBase64 = (file) => {
+                return new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.readAsDataURL(file);
+                  reader.onload = () => resolve(reader.result);
+                  reader.onerror = (error) => reject(error);
+                });
               };
-              const formData = new FormData();
-              formData.append("file", file);
 
-              const response = await fetch(
-                `${process.env.NEXT_PUBLIC_HOST}/uploadFile`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: formData,
-                  headers: headers,
-                }
-              );
+              const base64Image = await toBase64(file);
 
-              const result = await response.json();
-
-              if (result.success) {
-                // console.log("Image uploaded:", result.file.url);
-                return {
-                  success: 1,
-                  file: {
-                    url: result.file.url, // Return file URL here
-                  },
-                };
-              } else {
-                throw new Error("Image upload failed");
-              }
+              // Return the base64 string as the file URL
+              return {
+                success: 1,
+                file: {
+                  url: base64Image, // Return base64 string here
+                },
+              };
             } catch (error) {
               console.error("Image upload error:", error);
               return {
@@ -81,6 +64,59 @@ export const EDITOR_JS_TOOLS = {
       },
     },
   },
+  // image: {
+  //   class: ImageTool,
+  //   inlineToolbar: true,
+  //   config: {
+  //     uploader: {
+  //       async uploadByFile(file) {
+  //         if (typeof window !== "undefined") {
+  //           try {
+  //             // Upload the file to the backend
+  //             const token = document.cookie
+  //               .match(/BLOG_ACTIVE/)
+  //               .input.replace("BLOG_ACTIVE=", "");
+
+  //             const headers = {
+  //               Authorization: `Bearer ${token}`,
+  //             };
+  //             const formData = new FormData();
+  //             formData.append("file", file);
+
+  //             const response = await fetch(
+  //               `${process.env.NEXT_PUBLIC_HOST}/uploadFile`,
+  //               {
+  //                 method: "POST",
+  //                 body: formData,
+  //                 headers: headers,
+  //               }
+  //             );
+
+  //             const result = await response.json();
+
+  //             if (result.success) {
+  //               // console.log("Image uploaded:", result.file.url);
+  //               return {
+  //                 success: 1,
+  //                 file: {
+  //                   url: result.file.url, // Return file URL here
+  //                 },
+  //               };
+  //             } else {
+  //               throw new Error("Image upload failed");
+  //             }
+  //           } catch (error) {
+  //             console.error("Image upload error:", error);
+  //             return {
+  //               success: 0,
+  //               message: error.message || "Something went wrong",
+  //             };
+  //           }
+  //         }
+  //       },
+  //     },
+  //   },
+  // },
   checkList: CheckList,
   list: {
     class: List,
