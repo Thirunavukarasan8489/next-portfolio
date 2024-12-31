@@ -71,7 +71,7 @@ export default function Dashboard() {
       try {
         const token = document.cookie
           .match(/BLOG_ACTIVE/)
-          .input.replace("BLOG_ACTIVE=", "");
+          .input.replace("__vercel_toolbar=1; BLOG_ACTIVE=", "");
         console.log("Real Token : ", document.cookie.match(/BLOG_ACTIVE/));
         console.log("Token : ", token);
         const headers = {
