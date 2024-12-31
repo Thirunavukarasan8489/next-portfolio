@@ -113,7 +113,7 @@ const Editor = ({ editorBlock }) => {
   useEffect(() => {
     // Render the initial data only once when editorInstance and data are ready
     if (showEditor) {
-      setTimeout(() => {
+      // setTimeout(() => {
         if (editorInstance && data && !isEditorInitialized) {
           editorInstance?.blocks
             ?.render(data) // Dynamically load initial content into the editor
@@ -125,7 +125,7 @@ const Editor = ({ editorBlock }) => {
               console.error("Failed to render editor data:", err)
             );
         }
-      }, 500);
+      // }, 500);
     }
   }, [editorInstance, data, isEditorInitialized]);
 
