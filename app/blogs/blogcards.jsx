@@ -17,7 +17,7 @@ export default function BlogCards({ cardsData }) {
 
   const filteredCards = cardsData?.filter(
     (card) =>
-      card?.metatitle?.toLowerCase()?.includes(search.toLowerCase()) ||
+      card?.title?.toLowerCase()?.includes(search.toLowerCase()) ||
       card?.author?.toLowerCase()?.includes(search.toLowerCase()) ||
       card?.category?.toLowerCase()?.includes(search.toLowerCase())
   );
@@ -45,7 +45,7 @@ export default function BlogCards({ cardsData }) {
               >
                 <img
                   src={v.bannerimg}
-                  alt={v.metatitle}
+                  alt={v.title}
                   className="w-full h-48 object-cover rounded-lg transition-all group-hover:scale-105 group-hover:shadow-xl"
                 />
                 <div className="mt-auto">
@@ -62,7 +62,7 @@ export default function BlogCards({ cardsData }) {
                     </div>
                     <hr className="text-bordercolor pb-5" />
                     <h3 className="text-h6 text-text font-medium mb-5 group-hover:underline underline-offset-2 group-hover:text-primary">
-                      <a href={v.link}>{v.metatitle}</a>
+                      <a href={v.link}>{v.title}</a>
                     </h3>
                     <hr className="text-bordercolor pb-5" />
                     <div className="flex justify-between items-end text-sm text-textblack">

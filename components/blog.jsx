@@ -48,7 +48,7 @@ export default function Blog({ cardsData }) {
               >
                 <Image
                   src={v.bannerimg}
-                  alt={v.metatitle}
+                  alt={v.title}
                   width={350}
                   height={192}
                   className="w-full h-48 object-cover rounded-lg transition-all group-hover:scale-105 group-hover:shadow-xl"
@@ -66,7 +66,7 @@ export default function Blog({ cardsData }) {
                   </div>
                   <hr className="text-bordercolor pb-5" />
                   <h3 className="text-h6 text-text font-medium mb-5 group-hover:underline underline-offset-2 group-hover:text-primary">
-                    <a href={v.link}>{v.metatitle}</a>
+                    <a href={v.link}>{v.title}</a>
                   </h3>
                   <hr className="text-bordercolor pb-5" />
                   <div className="flex justify-between items-center text-sm text-textblack">
