@@ -28,6 +28,7 @@ const user = {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", current: true },
   { name: "Editor", href: "/dashboard/newstory", current: false },
+  // { name: "Meta", href: "/dashboard/meta", current: false },
 ];
 const userNavigation = [
   { name: "Your Profile", href: "#" },
@@ -43,6 +44,7 @@ export default function Dashboard() {
   const [getData, setGetData] = useState([]);
   const [search, setSearch] = useState("");
   const [publishStatus, setPublishStatus] = useState({});
+  const [isMeta, setIsMeta] = useState(false);
   const navigate = useRouter();
   const logOut = () => {
     if (typeof window !== "undefined") {
@@ -76,7 +78,7 @@ export default function Dashboard() {
           .split("; ") // Split the cookies into an array of individual cookies
           .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
           ?.split("=")[1]; // Extract the value (the token)
-        console.log("Token : ", token);
+        // console.log("Token : ", token);
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -86,6 +88,16 @@ export default function Dashboard() {
           .get(URL, { headers })
           .then((res) => {
             let deContent = JSON.parse(encryptdecrypt.decryptData(res.data));
+            console.log("deContent : ", deContent);
+            deContent?.forEach((v) => {
+              if (v.ismetapublished === "notmeta") {
+                // console.log('notmeta');
+                setIsMeta(true);
+              } else {
+                setIsMeta(false);
+                // console.log('yes meta');
+              }
+            });
             setGetData(deContent);
           })
           .catch((err) => {
@@ -120,7 +132,7 @@ export default function Dashboard() {
 
   const filteredCards = linkSlug?.filter(
     (card) =>
-      card?.metatitle?.toLowerCase()?.includes(search.toLowerCase()) ||
+      card?.title?.toLowerCase()?.includes(search.toLowerCase()) ||
       card?.author?.toLowerCase()?.includes(search.toLowerCase()) ||
       card?.category?.toLowerCase()?.includes(search.toLowerCase())
   );
@@ -221,6 +233,9 @@ export default function Dashboard() {
     }
   };
 
+  const handelMeta = (v) => {
+    console.log("handelMeta : ", v);
+  };
   // Capitalize helper
   const capitalizeFirstLetter = (val) =>
     val ? String(val).charAt(0).toUpperCase() + String(val).slice(1) : "";
@@ -419,7 +434,7 @@ export default function Dashboard() {
                         <div className="flex flex-col h-full">
                           <img
                             src={v.bannerimg}
-                            alt={v.metatitle}
+                            alt={v.title}
                             className="w-full h-48 object-cover rounded-lg transition-all group-hover:scale-105 group-hover:shadow-xl"
                           />
                           <div className="mt-auto">
@@ -439,7 +454,7 @@ export default function Dashboard() {
                             </div>
                             <hr className="text-bordercolor pb-5" />
                             <h3 className="text-h6 text-text font-medium mb-5 group-hover:underline underline-offset-2 group-hover:text-primary">
-                              <Link href={v.link}>{v.metatitle}</Link>
+                              <Link href={v.link}>{v.title}</Link>
                             </h3>
                             <hr className="text-bordercolor pb-5" />
                             <div className="flex justify-between items-center text-sm text-textblack pb-3">
@@ -459,7 +474,7 @@ export default function Dashboard() {
                                 <span>{formatDateDDMMYYYY(v.updatedDate)}</span>
                               </div>
                             </div>
-                            <div className="2xl:flex xl:flex lg:flex mdsm:block sm:block 2xl:justify-between xl:justify-between lg:justify-between mdsm:text-center sm:text-center items-end mt-3 2xl:space-x-2 xl:space-x-2 lg:space-x-2 mdsm:space-x-0 sm:space-x-0 mdsm:space-y-3 sm:space-y-3">
+                            <div className="2xl:flex xl:flex lg:flex mdsm:block sm:block 2xl:justify-between xl:justify-between lg:justify-between mdsm:text-center sm:text-center items-end mt-3 2xl:space-x-2 xl:space-x-2 lg:space-x-2 mdsm:space-x-0 sm:space-x-0 mdsm:space-y-3 sm:space-y-3 pb-3">
                               <div>
                                 <button
                                   className="bg-primary text-white mdsm:w-full sm:w-full py-1 px-5 rounded-md hover:bg-[#B53535]"
@@ -491,6 +506,20 @@ export default function Dashboard() {
                                 >
                                   Delete
                                 </button>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex justify-center">
+                                <Link
+                                  href={
+                                    isMeta
+                                      ? `/dashboard/meta?addmeta=${v._id}`
+                                      : `/dashboard/meta?editmeta=${v._id}`
+                                  }
+                                  className="bg-primary text-white text-center mdsm:w-full sm:w-full py-1 px-5 rounded-md hover:bg-[#B53535]"
+                                >
+                                  {isMeta ? "Add Meta" : "Edit Meta"}
+                                </Link>
                               </div>
                             </div>
                           </div>

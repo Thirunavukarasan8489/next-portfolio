@@ -12,6 +12,7 @@ import CheckList from "@editorjs/checklist";
 import Embed from "@editorjs/embed";
 import InlineCode from "@editorjs/inline-code";
 import Paragraph from "@editorjs/paragraph";
+import Marker from "@editorjs/marker";
 
 export const EDITOR_JS_TOOLS = {
   header: {
@@ -132,6 +133,11 @@ export const EDITOR_JS_TOOLS = {
       rows: 2,
       cols: 3,
     },
+  },
+  marker: {
+    class: Marker,
+    inlineToolbar: true,
+    shortcut: "CMD+SHIFT+M",
   },
   raw: RawTool,
   warning: Warning,

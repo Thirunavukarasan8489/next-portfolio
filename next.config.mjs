@@ -13,6 +13,9 @@ const nextConfig = {
 
     return config;
   },
+  // images: {
+  //   domains: ["localhost"], // Add 'localhost' for external image hosting
+  // },
 };
 
 export default nextConfig;

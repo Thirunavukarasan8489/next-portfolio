@@ -31,12 +31,13 @@ const Editor = ({ editorBlock }) => {
 
   const [values, setValues] = useState({
     uid: getBlogDetails.id,
-    metatitle: "",
-    metadescription: "",
+    title: "",
+    description: "",
     author: getBlogDetails.name,
     category: "",
     url: "",
     ispublished: "",
+    ismetapublished: "",
   });
 
   const ref = useRef();
@@ -252,11 +253,11 @@ const Editor = ({ editorBlock }) => {
     setValues({ ...values, [name]: value });
   };
 
-  const handleSave = async (publishStatus) => {
+  const handleSave = async (publishStatus, metaStatus) => {
     if (ref.current) {
       try {
         const outputData = await ref.current.save();
-        const url = values.metatitle
+        const url = values.title
           .toLowerCase()
           .replace(/[^a-z0-9\s-.]/g, "")
           .replace(/\s+/g, "-")
@@ -264,13 +265,14 @@ const Editor = ({ editorBlock }) => {
         let metaDatas = {
           uid: getBlogDetails.id,
           url: url,
-          metatitle: values.metatitle,
-          metadescription: values.metadescription,
+          title: values.title,
+          description: values.description,
           author: getBlogDetails.name,
           bannerimg: bannerimg,
           category: values.category,
           blogContent: outputData,
           ispublished: publishStatus,
+          ismetapublished: metaStatus,
         };
 
         const enData = encryptdecrypt.encryptData(JSON.stringify(metaDatas));
@@ -279,7 +281,7 @@ const Editor = ({ editorBlock }) => {
         //   .match(/BLOG_ACTIVE/)
         //   .input.replace("BLOG_ACTIVE=", "");
 
-          const token = document.cookie
+        const token = document.cookie
           .split("; ") // Split the cookies into an array of individual cookies
           .find((row) => row.startsWith("BLOG_ACTIVE=")) // Find the cookie with the key 'BLOG_ACTIVE'
           ?.split("=")[1]; // Extract the value (the token)
@@ -296,8 +298,8 @@ const Editor = ({ editorBlock }) => {
               setBannerimg(""); // Clear banner image
               setValues({
                 uid: "",
-                metatitle: "",
-                metadescription: "",
+                title: "",
+                description: "",
                 author: "",
                 category: "",
                 url: "",
@@ -324,7 +326,7 @@ const Editor = ({ editorBlock }) => {
     if (ref.current) {
       try {
         const outputData = await ref.current.save();
-        const url = values.metatitle
+        const url = values.title
           .toLowerCase()
           .replace(/[^a-z0-9\s-.]/g, "")
           .replace(/\s+/g, "-")
@@ -332,8 +334,8 @@ const Editor = ({ editorBlock }) => {
 
         let metaDatas = {
           url: url,
-          metatitle: values.metatitle,
-          metadescription: values.metadescription,
+          title: values.title,
+          description: values.description,
           author: getBlogDetails.name,
           bannerimg: bannerimg,
           category: values.category,
@@ -387,25 +389,25 @@ const Editor = ({ editorBlock }) => {
                   Meta Title <span className="text-primary ">*</span>
                 </label>
                 <input
-                  name="metatitle"
-                  value={values.metatitle}
+                  name="title"
+                  value={values.title}
                   onChange={(e) => {
                     handelChange(e);
-                    values.metatitle = e.target.value;
+                    values.title = e.target.value;
                   }}
                   className="block rounded-md bg-white px-3 py-1.5 text-base text-[#111827] outline outline-1 -outline-offset-1 outline-[#d1d5db] placeholder:text-[#9ca3af] focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
                 />
               </div>
               <div>
                 <label
-                  htmlFor="metadescription"
+                  htmlFor="description"
                   className="block text-sm/6 font-medium text-[#111827]"
                 >
                   Meta Description <span className="text-primary ">*</span>
                 </label>
                 <input
-                  name="metadescription"
-                  value={values.metadescription}
+                  name="description"
+                  value={values.description}
                   onChange={(e) => {
                     handelChange(e);
                   }}
@@ -503,8 +505,8 @@ const Editor = ({ editorBlock }) => {
                   Meta Title <span className="text-primary ">*</span>
                 </label>
                 <input
-                  name="metatitle"
-                  value={values.metatitle}
+                  name="title"
+                  value={values.title}
                   onChange={(e) => {
                     handelChange(e);
                   }}
@@ -513,14 +515,14 @@ const Editor = ({ editorBlock }) => {
               </div>
               <div>
                 <label
-                  htmlFor="metadescription"
+                  htmlFor="description"
                   className="block text-sm/6 font-medium text-[#111827]"
                 >
                   Meta Description <span className="text-primary ">*</span>
                 </label>
                 <input
-                  name="metadescription"
-                  value={values.metadescription}
+                  name="description"
+                  value={values.description}
                   onChange={(e) => {
                     handelChange(e);
                   }}
@@ -592,7 +594,7 @@ const Editor = ({ editorBlock }) => {
               <div className="flex justify-center space-x-8">
                 <button
                   onClick={() => {
-                    handleSave("Published");
+                    handleSave("Published", "notmeta");
                   }}
                   className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
                 >
@@ -600,7 +602,7 @@ const Editor = ({ editorBlock }) => {
                 </button>
                 <button
                   onClick={() => {
-                    handleSave("Unpublished");
+                    handleSave("Unpublished", "notmeta");
                   }}
                   className="border-[1.5px] border-primary font-semibold py-2 px-6 shadow-md text-primary rounded-md flex hover:bg-primary transition duration-300 hover:text-white cursor-pointer"
                 >
