@@ -3,6 +3,8 @@ import { useState } from "react";
 import MNCVEL from "@/public/images/projects/MNC Vel.jpg";
 import RVSYUVA from "@/public/images/projects/rvsyuvalogo.png";
 import MantelCorp from "@/public/images/projects/mantel corp.png";
+import Rithans from "@/public/images/projects/rithans.png";
+import Pipp from "@/public/images/projects/pipp.png";
 import Image from "next/image";
 export default function Projects() {
   // Sample data for the portfolio items
@@ -28,6 +30,27 @@ export default function Projects() {
       image: MantelCorp,
       link: "https://mantelcorp.co.uk/",
     },
+    {
+      id: 4,
+      title: "Rithans Arusuvai Catering Service",
+      category: "Website",
+      image: Rithans,
+      link: "https://rithans.rvscas.ac.in/",
+    },
+    {
+      id: 5,
+      title: "Padmavathi Institute of Public Policy",
+      category: "Website",
+      image: Pipp,
+      link: "https://pipp.rvscas.ac.in/",
+    },
+    // {
+    //   id: 6,
+    //   title: "",
+    //   category: "",
+    //   image: Pipp,
+    //   link: "",
+    // },
   ];
   // Tabs for filtering
   // const categories = [
