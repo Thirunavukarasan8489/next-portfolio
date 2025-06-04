@@ -65,8 +65,8 @@ export default function Herosection() {
               alt="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               title="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               className="shadow-xl rounded-[50%]"
-              width={502}
-              height={502}
+              width={400}
+              height={400}
             />
           </div>
         </div>

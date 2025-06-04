@@ -131,6 +131,7 @@ export default function Nav() {
               <a
                 href="https://www.facebook.com/profile.php?id=100012002896238"
                 target="_blank"
+                title="facebook"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaFacebookF />
@@ -138,6 +139,7 @@ export default function Nav() {
               <a
                 href="https://www.linkedin.com/in/thirunavukarasan/"
                 target="_blank"
+                title="Linkdin"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaLinkedinIn />
@@ -145,6 +147,7 @@ export default function Nav() {
               <a
                 href="https://www.instagram.com/the_bad_boy_thirugopi"
                 target="_blank"
+                title="Instagram"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaInstagram />
@@ -156,6 +159,7 @@ export default function Nav() {
           <button
             className="block lg:hidden text-3xl text-gray-700 focus:outline-none"
             onClick={toggleMenu}
+            aria-label="Open menu"
           >
             {isOpen ? <FiX /> : <FiMenu />}
           </button>
@@ -176,6 +180,7 @@ export default function Nav() {
               <button
                 className="text-3xl focus:outline-none"
                 onClick={toggleMenu}
+                aria-label="Close menu"
               >
                 <FiX />
               </button>
