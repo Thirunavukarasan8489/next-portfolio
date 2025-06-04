@@ -78,7 +78,7 @@ export default function Projects() {
             <div className="relative top-1.5 border-2 border-primary h-4 w-4 borderRadius1"></div>
             <div className="border-b-2 border-primary relative w-6"></div>
           </div>
-          <p className="font-semibold roboto-medium text-textcolor text-center px-8">
+          <p className="font-semibold roboto-medium text-text text-center px-8">
             Explore My Latest Web Development and UI/UX Design Work
           </p>
           <div className="container mx-auto py-12 px-10">

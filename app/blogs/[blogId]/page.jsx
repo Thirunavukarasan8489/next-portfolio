@@ -12,6 +12,7 @@ export async function generateMetadata({ params }) {
     `${process.env.NEXT_PUBLIC_HOST}/blogcontent/${hashParamId}`
   );
   const desData = blog.data;
+  // console.log("desData : ", desData);
 
   return {
     title: desData.metatitle || desData.title,

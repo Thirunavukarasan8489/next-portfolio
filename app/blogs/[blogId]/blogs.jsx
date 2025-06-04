@@ -41,7 +41,7 @@ const Paragraph = ({ data }) => {
     .replace(/&#39;/g, "'")
     .replace(
       /<a /g,
-      '<a target="_blank" class="font-medium underline hover:text-primary transition-all" '
+      '<a target="_blank" class="font-medium underline hover:text-primary transition-all text-wrap sm:text-sm" '
     );
 
   return (

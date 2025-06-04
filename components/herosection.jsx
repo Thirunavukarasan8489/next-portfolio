@@ -28,7 +28,7 @@ export default function Herosection() {
               Professional Web Designer Specializing in Dynamic and Responsive
               Web Projects
             </p>
-            <p className="font-semibold text-textcolor xl:text-base lg:text-base md:text-base mdsm:text-base sm:text-sm pb-5">
+            <p className="text-text font-medium xl:text-base lg:text-base md:text-base mdsm:text-base sm:text-sm pb-5">
               Obviously i&#39;m a experienced Web Developer & Full-Stack
               Developer. I create dynamic, responsive websites with a focus on
               user-centric design and optimized performance. With hands-on
@@ -61,8 +61,8 @@ export default function Herosection() {
             <Image
               src={Thiru}
               draggable="false"
-              alt="Thirunavukarasan, Web Developer & Full-Stack Developer"
-              title="Thirunavuarasan Developer"
+              alt="Thirunavukarasan is a Web Developer and Full-Stack Developer"
+              title="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               className="shadow-xl rounded-[50%]"
               width={400}
             />

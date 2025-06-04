@@ -1,4 +1,4 @@
-import localFont from "next/font/local";
+// import localFont from "next/font/local";
 import "./globals.css";
 import Script from "next/script";
 // const geistSans = localFont({
@@ -12,11 +12,11 @@ import Script from "next/script";
 //   weight: "100 900",
 // });
 
-export const metadata = {
-  title: "Home Page",
-  description:
-    "Thirunavukarasan is a Web Developer and Full-Stack Developer specializing in responsive web design and dynamic web applications. Explore his portfolio and get in touch today!",
-};
+// export const metadata = {
+//   title: "Thirunavukarasan is a Web Developer and Full-Stack Developer",
+//   description:
+//     "Thirunavukarasan is a Web Developer and Full-Stack Developer specializing in responsive web design and dynamic web applications. Explore his portfolio and get in touch today!",
+// };
 
 export default function RootLayout({ children }) {
   return (

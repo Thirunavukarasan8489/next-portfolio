@@ -1,5 +1,6 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 export default function Footer() {
+  const date = new Date().getFullYear();
   return (
     <div>
       <footer className="bg-text text-white py-8">
@@ -41,7 +42,7 @@ export default function Footer() {
           <hr className="pb-5" />
           {/* Copyright */}
           <p className="text-white">
-            © 2024 Thirunavukarasan. All Rights Reserved{" "}
+            © {date} Thirunavukarasan. All Rights Reserved{" "}
             {/* <span className="text-primary">❤</span> by Thirunavukarasan. */}
           </p>
           <p className="text-tiny">

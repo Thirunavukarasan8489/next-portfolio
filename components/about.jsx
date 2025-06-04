@@ -16,8 +16,8 @@ export default function About() {
           <div className="col-span-2">
             <Image
               src={Thiru}
-              alt="Thirunavuarasan Developer"
-              title="Thirunavuarasan Developer"
+              alt="Thirunavukarasan is a Web Developer and Full-Stack Developer"
+              title="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               className=""
             />
           </div>
@@ -30,7 +30,7 @@ export default function About() {
                   (Developing Websites and Web Applications)
                 </span>
               </h2>
-              <p className="text-textcolor roboto-regular font-medium pb-4">
+              <p className="text-text roboto-regular font-medium pb-4">
                 I&#39;m a Full-Stack Developer with expertise in the MERN stack
                 (MongoDB, Express.js, React, Node.js). With experience in
                 creating responsive websites, UI/UX design using Figma, and
@@ -123,7 +123,7 @@ export default function About() {
                   </li>
                 </ul>
               </div>
-              <p className="text-textcolor roboto-regular font-medium pb-2">
+              <p className="text-text roboto-regular font-medium pb-2">
                 Results-driven computer science student from
                 <b> RVS College of Arts & Science</b> passionate about
                 developing user-friendly software applications. Excellent

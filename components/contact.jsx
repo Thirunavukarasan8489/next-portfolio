@@ -112,11 +112,11 @@ export default function Contact() {
           <div className="relative top-1.5 border-2 border-primary h-4 w-4 borderRadius1"></div>
           <div className="border-b-2 border-primary relative w-6"></div>
         </div>
-        {/* <p className="font-semibold roboto-medium text-textcolor text-center px-8 pb-5">
+        {/* <p className="font-semibold roboto-medium text-text text-center px-8 pb-5">
           Get in Touch with a Thirunavukarasan Full-Stack Developer and UI/UX
           Designer.
         </p> */}
-        <p className="font-semibold roboto-medium text-textcolor text-center px-8 pb-5">
+        <p className="font-semibold roboto-medium text-text text-center px-8 pb-5">
           Contact Thirunavukarasan, a skilled Full-Stack Developer and UI/UX
           Designer.
         </p>
@@ -134,7 +134,7 @@ export default function Contact() {
                 />
               </div>
               <h4 className="font-medium text-h6 mb-3">MOBILE</h4>
-              <p className="text-textcolor roboto-regular mb-2">
+              <p className="text-text roboto-regular mb-2">
                 For quick assistance and real-time support, contact us via
                 mobile
               </p>
@@ -159,7 +159,7 @@ export default function Contact() {
                 />
               </div>
               <h4 className="font-medium text-h6 mb-3">EMAIL</h4>
-              <p className="text-textcolor roboto-regular mb-2">
+              <p className="text-text roboto-regular mb-2">
                 Promising development turmoil inclusive education transformative
                 community
               </p>
@@ -181,7 +181,7 @@ export default function Contact() {
                 />
               </div>
               <h4 className="font-medium text-h6 mb-3">LOCATION</h4>
-              <p className="text-textcolor roboto-regular mb-2">
+              <p className="text-text roboto-regular mb-2">
                 2/412 Thirumalai Nagar, Ganapathypalayam, Tiruppur - 641 605
               </p>
               <a

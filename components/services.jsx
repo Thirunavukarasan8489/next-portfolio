@@ -16,7 +16,7 @@ export default function Services() {
           <div className="relative top-1.5 border-2 border-primary h-4 w-4 borderRadius1"></div>
           <div className="border-b-2 border-primary relative w-6"></div>
         </div>
-        <p className="font-semibold roboto-regular text-textcolor text-center px-8">
+        <p className="font-semibold roboto-regular text-text text-center px-8">
           Expert Web Development, UI/UX Design, and Tailored Digital Solutions
         </p>
         <div className="py-10 container mx-auto">
@@ -26,10 +26,10 @@ export default function Services() {
                 <div className="flex justify-center pb-6">
                   <Image src={UIUX} alt="UIUX" className="text-center" />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   UI / UX Design
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Expert UI/UX design services crafting user-friendly,
                   responsive interfaces for seamless digital experiences.
                 </p>
@@ -44,10 +44,10 @@ export default function Services() {
                     className="text-center"
                   />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   web Design
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Professional web design services creating visually stunning,
                   responsive websites for optimal user experience.
                 </p>
@@ -58,10 +58,10 @@ export default function Services() {
                 <div className="flex justify-center pb-6">
                   <Image src={FullStack} alt="Full-Stack Development" />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   Full-Stack Development
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Comprehensive full-stack development services building
                   dynamic, scalable web applications from front to back.
                 </p>
@@ -76,10 +76,10 @@ export default function Services() {
                     className="text-center"
                   />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   Digital Marketing
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Targeted digital marketing strategies designed to boost online
                   visibility, drive traffic, and increase conversions.
                 </p>
@@ -90,10 +90,10 @@ export default function Services() {
                 <div className="flex justify-center pb-6">
                   <Image src={GraphicDesigner} alt="Graphic Design" />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   Graphic Design
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Creative graphic design solutions delivering visually
                   compelling branding, logos, and marketing materials.
                 </p>
@@ -104,10 +104,10 @@ export default function Services() {
                 <div className="flex justify-center pb-6">
                   <Image src={Printing} alt="Graphic Design" />
                 </div>
-                <p className="text-h6 group-hover:text-primary font-medium text-textblack pb-6">
+                <p className="text-h6 group-hover:text-primary font-semibold text-textblack pb-6">
                   Expert Offset Printing
                 </p>
-                <p className="roboto-regular text-textcolor leading-loose">
+                <p className="roboto-regular text-text leading-loose">
                   Tailored printing solutions for tags, labels, and all types of
                   offset printing. Delivering sharp designs and vibrant colors
                   to make your brand stand out.
