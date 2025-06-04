@@ -129,19 +129,22 @@ export default function Nav() {
             {/* Social Media Icons */}
             <div className="flex space-x-3">
               <a
-                href="/"
+                href="https://www.facebook.com/profile.php?id=100012002896238"
+                target="_blank"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaFacebookF />
               </a>
               <a
-                href="/"
+                href="https://www.linkedin.com/in/thirunavukarasan/"
+                target="_blank"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaLinkedinIn />
               </a>
               <a
-                href="/"
+                href="https://www.instagram.com/the_bad_boy_thirugopi"
+                target="_blank"
                 className="border p-2 rounded-md border-text text-gray hover:text-primary hover:border-primary transition duration-300"
               >
                 <FaInstagram />

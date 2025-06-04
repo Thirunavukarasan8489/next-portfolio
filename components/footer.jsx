@@ -21,19 +21,22 @@ export default function Footer() {
           {/* Social Media Links */}
           <div className="flex justify-center space-x-4 mb-6">
             <a
-              href="#"
+              href="https://www.facebook.com/profile.php?id=100012002896238"
+              target="_blank"
               className="text-white border p-2 rounded-md hover:text-primary hover:border-primary transition duration-300"
             >
               <FaFacebookF />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/thirunavukarasan/"
+              target="_blank"
               className="text-white border p-2 rounded-md hover:text-primary hover:border-primary transition duration-300"
             >
               <FaLinkedinIn />
             </a>
             <a
-              href="#"
+              href="https://www.instagram.com/the_bad_boy_thirugopi"
+              target="_blank"
               className="text-white border p-2 rounded-md hover:text-primary hover:border-primary transition duration-300"
             >
               <FaInstagram />

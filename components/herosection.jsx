@@ -61,10 +61,12 @@ export default function Herosection() {
             <Image
               src={Thiru}
               draggable="false"
+              loading="lazy"
               alt="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               title="Thirunavukarasan is a Web Developer and Full-Stack Developer"
               className="shadow-xl rounded-[50%]"
-              width={400}
+              width={502}
+              height={502}
             />
           </div>
         </div>

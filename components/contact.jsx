@@ -133,7 +133,7 @@ export default function Contact() {
                   className="select-none"
                 />
               </div>
-              <h4 className="font-medium text-h6 mb-3">MOBILE</h4>
+              <h6 className="font-medium text-h6 mb-3">MOBILE</h6>
               <p className="text-text roboto-regular mb-2">
                 For quick assistance and real-time support, contact us via
                 mobile
@@ -158,7 +158,7 @@ export default function Contact() {
                   className="select-none"
                 />
               </div>
-              <h4 className="font-medium text-h6 mb-3">EMAIL</h4>
+              <h6 className="font-medium text-h6 mb-3">EMAIL</h6>
               <p className="text-text roboto-regular mb-2">
                 Promising development turmoil inclusive education transformative
                 community
@@ -180,7 +180,7 @@ export default function Contact() {
                   className="select-none"
                 />
               </div>
-              <h4 className="font-medium text-h6 mb-3">LOCATION</h4>
+              <h6 className="font-medium text-h6 mb-3">LOCATION</h6>
               <p className="text-text roboto-regular mb-2">
                 2/412 Thirumalai Nagar, Ganapathypalayam, Tiruppur - 641 605
               </p>
