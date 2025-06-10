@@ -24,7 +24,7 @@ export async function GET() {
     ...dynamicRoutes.map(
       ({ slug, updatedAt }) => `
         <url>
-          <loc>${baseUrl}/blog/${slug}</loc>
+          <loc>${baseUrl}/blogs/${slug}</loc>
           <lastmod>${updatedAt}</lastmod>
           <changefreq>weekly</changefreq>
           <priority>0.8</priority>
