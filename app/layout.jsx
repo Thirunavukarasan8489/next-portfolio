@@ -1,6 +1,7 @@
 // import localFont from "next/font/local";
 import "./globals.css";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
 //   variable: "--font-geist-sans",
@@ -46,7 +47,10 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
