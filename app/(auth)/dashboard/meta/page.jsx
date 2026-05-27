@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import dynamic from "next/dynamic";
 const Addeditmetatags = dynamic(() => import("./addeditmetatags"), {
   ssr: false, // Disable SSR for this component
