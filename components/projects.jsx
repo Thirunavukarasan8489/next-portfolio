@@ -6,7 +6,7 @@ import RVSYUVA from "@/public/images/projects/rvsyuvalogo.png";
 // import Rithans from "@/public/images/projects/rithans.png";
 import Dashboard from "@/public/images/projects/dashboard.png";
 import Transformtechin from "@/public/images/projects/transformtechin.png";
-import Transformtechai from "@/public/images/projects/transformtechai.png";
+// import Transformtechai from "@/public/images/projects/transformtechai.png";
 import Harish from "@/public/images/projects/harish.png";
 import Creative from "@/public/images/projects/creative.png";
 import IasPipp from "@/public/images/projects/ias-pipp.png";
@@ -59,13 +59,13 @@ export default function Projects() {
       image: Transformtechin,
       link: "https://transformtech.in/",
     },
-    {
-      id: 7,
-      title: "transformtech.ai",
-      category: "Website",
-      image: Transformtechai,
-      link: "https://transformtech.ai/",
-    },
+    // {
+    //   id: 7,
+    //   title: "transformtech.ai",
+    //   category: "Website",
+    //   image: Transformtechai,
+    //   link: "https://transformtech.ai/",
+    // },
     {
       id: 8,
       title: "Harish Photography",
