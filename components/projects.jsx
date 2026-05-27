@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import MNCVEL from "@/public/images/projects/MNC Vel.jpg";
+// import { useState } from "react";
+// import MNCVEL from "@/public/images/projects/MNC Vel.jpg";
 import RVSYUVA from "@/public/images/projects/rvsyuvalogo.png";
 // import MantelCorp from "@/public/images/projects/mantel corp.png";
 // import Rithans from "@/public/images/projects/rithans.png";
