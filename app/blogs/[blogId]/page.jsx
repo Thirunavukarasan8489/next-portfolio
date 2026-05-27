@@ -1,18 +1,17 @@
-import axios from "axios";
+import { notFound } from "next/navigation";
 import Blogs from "./blogs";
-import encryptdecrypt from "@/utils/encryptdecrypt";
+import { getBlogMetaByUrl } from "@/lib/blog-content";
+
 export async function generateMetadata({ params }) {
-  const { blogId } = params;
+  const { blogId } = await params;
+  const desData = await getBlogMetaByUrl(blogId);
 
-  // Encrypt the blogId
-  const hashParamId = encryptdecrypt.encryptData(blogId);
-
-  // Fetch blog data from the API
-  const blog = await axios.get(
-    `${process.env.NEXT_PUBLIC_HOST}/blogcontent/${hashParamId}`
-  );
-  const desData = blog.data;
-  // console.log("desData : ", desData);
+  if (!desData) {
+    return {
+      title: "Blog Not Found",
+      description: "The requested blog was not found.",
+    };
+  }
 
   return {
     title: desData.metatitle || desData.title,
@@ -48,16 +47,12 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { blogId } = params;
+  const { blogId } = await params;
+  const desData = await getBlogMetaByUrl(blogId);
 
-  // Encrypt the blogId
-  const hashParamId = encryptdecrypt.encryptData(blogId);
-
-  // Fetch blog data from the API
-  const blog = await axios.get(
-    `${process.env.NEXT_PUBLIC_HOST}/blogcontent/${hashParamId}`
-  );
-  const desData = blog.data;
+  if (!desData) {
+    notFound();
+  }
 
   // Define the JSON-LD schema
   const jsonLd = {

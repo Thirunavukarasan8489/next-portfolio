@@ -66,17 +66,17 @@ export default function Blog({ cardsData }) {
                   </div>
                   <hr className="text-bordercolor pb-5" />
                   <h3 className="text-h6 text-text font-medium mb-5 group-hover:underline underline-offset-2 group-hover:text-primary">
-                    <a href={v.link}>{v.title}</a>
+                    <Link href={v.link}>{v.title}</Link>
                   </h3>
                   <hr className="text-bordercolor pb-5" />
                   <div className="flex justify-between items-center text-sm text-textblack">
                     <div className="flex items-center space-x-2">
-                      <a
+                      <Link
                         href={v.link}
                         className="text-base hover:underline roboto-regular"
                       >
                         Read More{" "}
-                      </a>
+                      </Link>
                       <span>
                         <FaChevronRight />
                       </span>

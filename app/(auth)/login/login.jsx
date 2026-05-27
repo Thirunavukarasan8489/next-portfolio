@@ -42,7 +42,7 @@ export default function Login() {
       setLoading(true);
     }
     if (!values.password) {
-      error.password = "Enter Your New Password";
+      error.password = "Enter Your Password";
       setLoading(true);
     }
     // else if (!pass.test(values.password)) {
