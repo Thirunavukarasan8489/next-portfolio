@@ -1,11 +1,13 @@
 "use client";
 // import { useState } from "react";
 // import MNCVEL from "@/public/images/projects/MNC Vel.jpg";
-import RVSYUVA from "@/public/images/projects/rvsyuvalogo.png";
+// import RVSYUVA from "@/public/images/projects/rvsyuvalogo.png";
+import RVSYUVA from "@/public/images/projects/rvs-yuva.png";
 // import MantelCorp from "@/public/images/projects/mantel corp.png";
 // import Rithans from "@/public/images/projects/rithans.png";
 import Dashboard from "@/public/images/projects/dashboard.png";
 import Transformtechin from "@/public/images/projects/transformtechin.png";
+import Transformtechai from "@/public/images/projects/transformtechai.png";
 // import Transformtechai from "@/public/images/projects/transformtechai.png";
 import Harish from "@/public/images/projects/harish.png";
 import Creative from "@/public/images/projects/creative.png";
@@ -55,30 +57,30 @@ export default function Projects() {
     {
       id: 6,
       title: "transformtech.in",
-      category: "Website",
+      category: "Business Website",
       image: Transformtechin,
       link: "https://transformtech.in/",
     },
-    // {
-    //   id: 7,
-    //   title: "transformtech.ai",
-    //   category: "Website",
-    //   image: Transformtechai,
-    //   link: "https://transformtech.ai/",
-    // },
+    {
+      id: 7,
+      title: "transformtech.ai",
+      category: "Business Website",
+      image: Transformtechai,
+      link: "https://transformtech.ai/",
+    },
     {
       id: 8,
+      title: "Creative Lin Graphics",
+      category: "Business Website",
+      image: Creative,
+      link: "https://creativelinegraphics.com/",
+    },
+    {
+      id: 9,
       title: "Harish Photography",
       category: "Portfolio Website",
       image: Harish,
       link: "https://harish-portfolio-jade.vercel.app/",
-    },
-    {
-      id: 9,
-      title: "Creative Designs",
-      category: "Business Website",
-      image: Creative,
-      link: "https://creativelinegraphics.com/",
     },
     // {
     //   id: 10,
